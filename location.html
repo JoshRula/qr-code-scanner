@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DD Inventory System</title>
+  <link rel="stylesheet" href="src/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    #reader {
+      width: 250px;
+      height: 250px;
+      margin: 20px auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .field {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>DD Inventory System</h1>
+  <p>Scan <strong>LOCATION</strong></p>
+  <div id="reader">Tap here to scan</div>
+  <div class="field">
+    <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
+  </div>
+  <button onclick="handleLocationSubmit()">Submit</button>
+
+  <script>
+    function onScanSuccess(decodedText, decodedResult) {
+      console.log(`Code scanned = ${decodedText}`, decodedResult);
+      document.getElementById('scanned-text').value = decodedText;
+      html5QrCode.stop().then(ignore => {
+        document.getElementById('reader').innerText = 'Tap here to scan';
+      }).catch(err => {
+        console.error("Error stopping QR code scanner: ", err);
+      });
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    document.getElementById('reader').addEventListener('click', () => {
+      html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 10, // Optional, frame per seconds for qr code scanning
+          qrbox: 200 // Optional, if you want bounded box UI
+        },
+        onScanSuccess
+      ).catch(err => {
+        console.error("Error starting QR code scanner: ", err);
+      });
+
+      document.getElementById('reader').innerText = '';
+    });
+
+    function handleLocationSubmit() {
+      const location = document.getElementById('scanned-text').value;
+      const itemNumber = localStorage.getItem('itemNumber');
+
+      if (!location) {
+        alert("Please scan a location.");
+        return;
+      }
+
+      const data = {
+        itemNumber: itemNumber,
+        status: 'IN',
+        location: location
+      };
+
+      fetch('https://script.google.com/macros/s/AKfycbwSznRJhCm2rugfE972ugVGvcomrPH-WpAJvJMrLcfVX3B9CwZF0Uz1Og0yy5T03bltrQ/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Success: ' + JSON.stringify(data));
+        localStorage.removeItem('itemNumber'); // Clear the item number from local storage
+        window.location.href = 'index.html'; // Redirect back to the main page
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+      });
+    }
+  </script>
+</body>
+</html>
