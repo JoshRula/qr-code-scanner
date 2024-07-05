@@ -17,6 +17,13 @@
       margin: 20px auto;
       border: 1px solid #ccc;
       padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    #reader.active {
+      border-color: green;
     }
     .field {
       margin: 10px 0;
@@ -31,7 +38,7 @@
 <body>
   <h1>DD Inventory System</h1>
   <p>Scan <strong>ITEM</strong></p>
-  <div id="reader"></div>
+  <div id="reader">Tap here to scan</div>
   <div class="field">
     <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
   </div>
@@ -45,13 +52,34 @@
     function onScanSuccess(decodedText, decodedResult) {
       console.log(`Code scanned = ${decodedText}`, decodedResult);
       document.getElementById('scanned-text').value = decodedText;
+      stopQrCodeScanner();
     }
 
-    var html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-      { facingMode: "environment" }, 
-      { fps: 10, qrbox: 250 },
-      onScanSuccess);
+    let html5QrCode;
+
+    function startQrCodeScanner() {
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("reader");
+      }
+      document.getElementById('reader').classList.add('active');
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        onScanSuccess
+      ).catch(err => {
+        console.error("Error starting QR code scanner: ", err);
+      });
+    }
+
+    function stopQrCodeScanner() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(ignore => {
+          document.getElementById('reader').classList.remove('active');
+        }).catch(err => {
+          console.error("Error stopping QR code scanner: ", err);
+        });
+      }
+    }
 
     function handleSubmit() {
       const scannedText = document.getElementById('scanned-text').value;
@@ -91,6 +119,10 @@
         alert('Error: ' + error.message);
       });
     }
+
+    document.getElementById('reader').addEventListener('click', startQrCodeScanner);
+    document.getElementById('reader').addEventListener('touchstart', startQrCodeScanner);
+
   </script>
 </body>
 </html>
