@@ -1,128 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DD Inventory System</title>
-  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 20px;
-    }
-    #reader {
-      width: 300px;
-      height: 300px;
-      margin: 20px auto;
-      border: 1px solid #ccc;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    #reader.active {
-      border-color: green;
-    }
-    .field {
-      margin: 10px 0;
-    }
-    .radio-group {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-  </style>
-</head>
-<body>
-  <h1>DD Inventory System</h1>
-  <p>Scan <strong>ITEM</strong></p>
-  <div id="reader">Tap here to scan</div>
-  <div class="field">
-    <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
-  </div>
-  <div class="radio-group">
-    <label><input type="radio" name="status" value="IN"> IN</label>
-    <label><input type="radio" name="status" value="OUT"> OUT</label>
-  </div>
-  <button onclick="handleSubmit()">Submit</button>
+<html>
+  <head>
+    <title>QR Code Scanner</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+    <link rel="stylesheet" href="src/styles.css" />
+    <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+  </head>
 
-  <script>
-    function onScanSuccess(decodedText, decodedResult) {
-      console.log(`Code scanned = ${decodedText}`, decodedResult);
-      document.getElementById('scanned-text').value = decodedText;
-      stopQrCodeScanner();
-    }
+  <body>
+    <div id="container">
+      <h1>QR Code Scanner</h1>
 
-    let html5QrCode;
+      <a id="btn-scan-qr">
+        <img src="https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2017/07/1499401426qr_icon.svg">
+      <a/>
 
-    function startQrCodeScanner() {
-      if (!html5QrCode) {
-        html5QrCode = new Html5Qrcode("reader");
-      }
-      document.getElementById('reader').classList.add('active');
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        onScanSuccess
-      ).catch(err => {
-        console.error("Error starting QR code scanner: ", err);
-      });
-    }
+      <canvas hidden="" id="qr-canvas"></canvas>
 
-    function stopQrCodeScanner() {
-      if (html5QrCode) {
-        html5QrCode.stop().then(ignore => {
-          document.getElementById('reader').classList.remove('active');
-        }).catch(err => {
-          console.error("Error stopping QR code scanner: ", err);
-        });
-      }
-    }
+      <div id="qr-result" hidden="">
+        <b>Data:</b> <span id="outputData"></span>
+      </div>
+    </div>
 
-    function handleSubmit() {
-      const scannedText = document.getElementById('scanned-text').value;
-      const status = document.querySelector('input[name="status"]:checked');
-
-      if (!scannedText) {
-        alert("Please scan an item.");
-        return;
-      }
-
-      if (!status) {
-        alert("Please select a status (IN/OUT).");
-        return;
-      }
-
-      const [itemNumber, orderNumber] = scannedText.split(',');
-
-      const data = {
-        itemNumber: itemNumber,
-        status: status.value,
-        orderNumber: orderNumber || '' // Handle the case if orderNumber is not present
-      };
-
-      fetch('https://script.google.com/macros/s/AKfycbwSznRJhCm2rugfE972ugVGvcomrPH-WpAJvJMrLcfVX3B9CwZF0Uz1Og0yy5T03bltrQ/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert('Success: ' + JSON.stringify(data));
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        alert('Error: ' + error.message);
-      });
-    }
-
-    document.getElementById('reader').addEventListener('click', startQrCodeScanner);
-    document.getElementById('reader').addEventListener('touchstart', startQrCodeScanner);
-
-  </script>
-</body>
+    <script src="./src/qrCodeScanner.js"></script>
+  </body>
 </html>
