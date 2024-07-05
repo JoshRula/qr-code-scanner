@@ -18,7 +18,7 @@
       margin: 20px auto;
       border: 1px solid #ccc;
       padding: 10px;
-      display: none; /* Hidden by default */
+      display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
@@ -44,24 +44,27 @@
     <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
   </div>
   <div class="radio-group">
-    <label><input type="radio" name="status" value="IN" onclick="toggleFields()"> IN</label>
-    <label><input type="radio" name="status" value="OUT" onclick="toggleFields()"> OUT</label>
+    <label><input type="radio" name="status" value="IN" onclick="toggleOrderNumberField()"> IN</label>
+    <label><input type="radio" name="status" value="OUT" onclick="toggleOrderNumberField()"> OUT</label>
   </div>
-  <div class="field" id="second-scan-field" style="display: none;">
-    <!-- Placeholder for second scan -->
-    <p id="second-scan-label"><strong>Scan LOCATION</strong></p>
-    <div id="second-reader">Tap here to scan</div>
-  </div>
-  <div class="field order-number-field" id="order-number-field" style="display: none;">
-    <!-- Order number input field -->
+  <div class="field order-number-field">
     <label for="order-number">ORDER NUMBER</label>
     <input type="number" id="order-number" min="10000" max="100000" placeholder="Enter order number">
   </div>
   <button onclick="handleSubmit()">Submit</button>
 
   <script>
+    function onScanSuccess(decodedText, decodedResult) {
+      console.log(`Code scanned = ${decodedText}`, decodedResult);
+      document.getElementById('scanned-text').value = decodedText;
+      html5QrCode.stop().then(ignore => {
+        document.getElementById('reader').innerText = 'Tap here to scan';
+      }).catch(err => {
+        console.error("Error stopping QR code scanner: ", err);
+      });
+    }
+
     const html5QrCode = new Html5Qrcode("reader");
-    const secondHtml5QrCode = new Html5Qrcode("second-reader");
 
     document.getElementById('reader').addEventListener('click', () => {
       html5QrCode.start(
@@ -78,8 +81,72 @@
       document.getElementById('reader').innerText = '';
     });
 
-    document.getElementById('second-reader').addEventListener('click', () => {
-      secondHtml5QrCode.start(
-        { facingMode: "environment" },
-        {
-          fps: 10, // Optional, frame pe
+    function toggleOrderNumberField() {
+      const status = document.querySelector('input[name="status"]:checked').value;
+      const orderNumberField = document.querySelector('.order-number-field');
+      if (status === 'OUT') {
+        orderNumberField.style.display = 'block';
+      } else {
+        orderNumberField.style.display = 'none';
+      }
+    }
+
+    function handleSubmit() {
+      const scannedText = document.getElementById('scanned-text').value;
+      const status = document.querySelector('input[name="status"]:checked');
+
+      if (!scannedText) {
+        alert("Please scan an item.");
+        return;
+      }
+
+      if (!status) {
+        alert("Please select a status (IN/OUT).");
+        return;
+      }
+
+      if (status.value === 'OUT') {
+        const orderNumber = document.getElementById('order-number').value;
+        if (!orderNumber || orderNumber < 10000 || orderNumber > 100000) {
+          alert("Please enter a valid order number between 10000 and 100000.");
+          return;
+        }
+
+        const data = {
+          itemNumber: scannedText,
+          status: status.value,
+          orderNumber: orderNumber
+        };
+
+        fetch('https://script.google.com/macros/s/AKfycbwSznRJhCm2rugfE972ugVGvcomrPH-WpAJvJMrLcfVX3B9CwZF0Uz1Og0yy5T03bltrQ/exec', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert('Success: ' + JSON.stringify(data));
+          clearFields();
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert('Error: ' + error.message);
+        });
+      } else if (status.value === 'IN') {
+        localStorage.setItem('itemNumber', scannedText);
+        window.location.href = 'location.html';
+      }
+    }
+
+    function clearFields() {
+      document.getElementById('scanned-text').value = '';
+      document.querySelector('input[name="status"]:checked').checked = false;
+      document.getElementById('order-number').value = '';
+      document.querySelector('.order-number-field').style.display = 'none';
+      html5QrCode.clear();
+    }
+  </script>
+</body>
+</html>
