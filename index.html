@@ -88,29 +88,32 @@
         return;
       }
 
-      const [itemNumber, orderNumber] = scannedText.split(',');
+      if (status.value === 'IN') {
+        localStorage.setItem('itemNumber', scannedText);
+        window.location.href = 'location.html';
+      } else {
+        const data = {
+          itemNumber: scannedText,
+          status: status.value,
+          orderNumber: '' // Assuming no order number for OUT status
+        };
 
-      const data = {
-        itemNumber: itemNumber,
-        status: status.value,
-        orderNumber: orderNumber || '' // Handle the case if orderNumber is not present
-      };
-
-      fetch('https://script.google.com/macros/s/AKfycbwSznRJhCm2rugfE972ugVGvcomrPH-WpAJvJMrLcfVX3B9CwZF0Uz1Og0yy5T03bltrQ/exec', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert('Success: ' + JSON.stringify(data));
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        alert('Error: ' + error.message);
-      });
+        fetch('https://script.google.com/macros/s/AKfycbwSznRJhCm2rugfE972ugVGvcomrPH-WpAJvJMrLcfVX3B9CwZF0Uz1Og0yy5T03bltrQ/exec', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert('Success: ' + JSON.stringify(data));
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert('Error: ' + error.message);
+        });
+      }
     }
   </script>
 </body>
