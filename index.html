@@ -128,6 +128,7 @@
         .then(response => response.json())
         .then(data => {
           alert('Success: ' + JSON.stringify(data));
+          clearFields();
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -137,6 +138,14 @@
         localStorage.setItem('itemNumber', scannedText);
         window.location.href = 'location.html';
       }
+    }
+
+    function clearFields() {
+      document.getElementById('scanned-text').value = '';
+      document.querySelector('input[name="status"]:checked').checked = false;
+      document.getElementById('order-number').value = '';
+      document.querySelector('.order-number-field').style.display = 'none';
+      html5QrCode.clear();
     }
   </script>
 </body>
