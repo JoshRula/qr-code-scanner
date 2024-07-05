@@ -13,8 +13,8 @@
       margin: 20px;
     }
     #reader {
-      width: 300px;
-      height: 300px;
+      width: 250px;
+      height: 250px;
       margin: 20px auto;
       border: 1px solid #ccc;
       padding: 10px;
@@ -64,14 +64,14 @@
         { facingMode: "environment" },
         {
           fps: 10, // Optional, frame per seconds for qr code scanning
-          qrbox: 250 // Optional, if you want bounded box UI
+          qrbox: 200 // Optional, if you want bounded box UI
         },
         onScanSuccess
       ).catch(err => {
         console.error("Error starting QR code scanner: ", err);
       });
 
-      document.getElementById('reader').innerText = 'Scanning...';
+      document.getElementById('reader').innerText = '';
     });
 
     function handleSubmit() {
