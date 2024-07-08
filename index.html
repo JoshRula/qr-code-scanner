@@ -6,49 +6,6 @@
   <title>DD Inventory System</title>
   <link rel="stylesheet" href="src/styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 20px;
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-    #reader, #second-reader, .gray-placeholder {
-      width: 200px;
-      height: 200px;
-      margin: 20px auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .gray-placeholder {
-      background-color: #ccc;
-      border: 1px solid #999;
-    }
-    .field {
-      margin: 10px 0;
-    }
-    .radio-group {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin: 10px 0;
-      font-size: 1.2em;
-    }
-    .order-number-field {
-      display: none;
-      margin-top: 20px;
-    }
-    .hidden {
-      display: none;
-    }
-    .disabled {
-      color: gray;
-    }
-  </style>
 </head>
 <body>
   <h1>DD Inventory System</h1>
@@ -56,7 +13,7 @@
   <p><strong style="font-size: 1.1em; text-decoration: underline;">ITEM</strong></p>
   <div id="reader"><img src="qr.svg" alt="Scan QR code" width="180"></div>
   <div class="field">
-    <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly style="font-size: 1.2em;">
+    <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
   </div>
   <div class="radio-group">
     <label><input type="radio" name="status" value="IN" onclick="toggleFields()"> IN</label>
@@ -75,7 +32,7 @@
     <p><strong style="font-size: 1.1em; text-decoration: underline;">LOCATION</strong></p>
     <div id="second-reader" class="gray-placeholder"><img src="grayqr.svg" alt="Scan QR code" width="180"></div>
     <div class="field">
-      <input type="text" id="second-scanned-text" placeholder="Scanned text will appear here" readonly style="font-size: 1.2em;" class="gray-placeholder">
+      <input type="text" id="second-scanned-text" placeholder="Scanned text will appear here" readonly class="gray-placeholder">
     </div>
     <button class="gray-placeholder" disabled>Submit</button>
   </div>
@@ -196,12 +153,9 @@
       document.querySelector('input[name="status"]:checked').checked = false;
       document.getElementById('order-number').value = '';
       document.getElementById('order-number').disabled = true;
-      document.getElementById('order-number-field').style.display = 'none';
-      document.getElementById('submit-placeholder').classList.add('hidden');
-      document.getElementById('second-scan-section').classList.add('disabled');
+      document.getElementById('order-number-field').querySelector('label').classList.add('disabled');
       document.getElementById('second-scanned-text').value = '';
-      html5QrCode.clear();
-      secondHtml5QrCode.clear();
+      toggleFields();
     }
   </script>
 </body>
