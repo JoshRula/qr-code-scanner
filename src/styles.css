@@ -9,85 +9,74 @@ body {
 }
 
 header {
+  background-color: #f4f4f4;
+  width: 100%;
+  padding: 10px 0;
   position: fixed;
   top: 0;
-  width: 100%;
-  background-color: #f1f1f1;
-  padding: 20px 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
 main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 500px;
-  margin-top: 80px; /* Space for the fixed header */
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 70px; /* Adjust based on header height */
 }
 
-h1 {
-  margin: 0;
-}
-
-#reader, #second-reader, .gray-placeholder {
-  width: 200px;
-  height: 200px;
-  margin: 20px auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.gray-placeholder {
-  background-color: #ccc;
-  border: 1px solid #999;
-}
-
-.field {
+p {
   margin: 10px 0;
 }
 
 .radio-group {
   display: flex;
   justify-content: center;
-  gap: 20px;
   margin: 10px 0;
-  font-size: 1.2em;
 }
 
-.order-number-field {
-  display: none;
-  margin-top: 20px;
+.radio-group label {
+  margin: 0 15px;
+  font-size: 1.1em;
 }
 
-.hidden {
-  display: none;
-}
-
-.disabled {
-  color: gray;
+.field {
+  margin: 15px 0;
 }
 
 input[type="text"], input[type="number"] {
+  padding: 10px;
   font-size: 1.2em;
-  padding: 5px;
   width: 80%;
-  margin: 10px auto;
 }
 
 button {
   padding: 10px 20px;
-  font-size: 1.1em;
+  font-size: 1.2em;
+}
+
+.disabled input, .disabled button {
+  background-color: #d3d3d3;
+  color: #6c757d;
+  border: none;
+}
+
+.gray-button {
+  background-color: #d3d3d3;
+  color: #6c757d;
+  border: none;
+  cursor: not-allowed;
+}
+
+.gray-placeholder {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+#reader img, #second-reader img {
   cursor: pointer;
 }
 
-button.gray-placeholder {
-  background-color: #ccc;
-  border: 1px solid #999;
-  color: gray;
-  cursor: not-allowed;
+#order-submit-placeholder {
+  margin: 15px 0;
+}
+
+#second-scan-section {
+  margin-top: 20px;
 }
