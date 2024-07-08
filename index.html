@@ -26,8 +26,8 @@
       <label for="order-number" class="disabled">ORDER NUMBER</label>
       <input type="number" id="order-number" min="10000" max="100000" placeholder="Enter order number" disabled>
     </div>
-    <div id="submit-placeholder" class="hidden">
-      <button onclick="handleSubmit()">Submit</button>
+    <div id="order-submit-placeholder" class="disabled">
+      <button class="gray-button" disabled>Submit</button>
     </div>
 
     <div id="second-scan-section" class="disabled">
@@ -37,7 +37,7 @@
       <div class="field">
         <input type="text" id="second-scanned-text" placeholder="Scanned text will appear here" readonly class="gray-placeholder">
       </div>
-      <button class="gray-placeholder" disabled>Submit</button>
+      <button class="gray-button" disabled>Submit</button>
     </div>
   </main>
 
@@ -86,25 +86,27 @@
     function toggleFields() {
       const status = document.querySelector('input[name="status"]:checked').value;
       const orderNumberField = document.getElementById('order-number-field');
-      const submitPlaceholder = document.getElementById('submit-placeholder');
+      const orderSubmitPlaceholder = document.getElementById('order-submit-placeholder');
       const secondScanSection = document.getElementById('second-scan-section');
 
       if (status === 'IN') {
-        orderNumberField.style.display = 'none';
         orderNumberField.querySelector('input').disabled = true;
         orderNumberField.querySelector('label').classList.add('disabled');
+        orderSubmitPlaceholder.classList.add('disabled');
+        orderSubmitPlaceholder.querySelector('button').disabled = true;
+
         secondScanSection.classList.remove('disabled');
         secondScanSection.querySelectorAll('.gray-placeholder').forEach(el => el.classList.remove('gray-placeholder'));
         secondScanSection.querySelectorAll('button, input').forEach(el => el.disabled = false);
-        submitPlaceholder.classList.add('hidden');
       } else if (status === 'OUT') {
-        orderNumberField.style.display = 'block';
         orderNumberField.querySelector('input').disabled = false;
         orderNumberField.querySelector('label').classList.remove('disabled');
+        orderSubmitPlaceholder.classList.remove('disabled');
+        orderSubmitPlaceholder.querySelector('button').disabled = false;
+
         secondScanSection.classList.add('disabled');
-        secondScanSection.querySelectorAll('.gray-placeholder').forEach(el => el.classList.add('gray-placeholder'));
         secondScanSection.querySelectorAll('button, input').forEach(el => el.disabled = true);
-        submitPlaceholder.classList.remove('hidden');
+        secondScanSection.querySelectorAll('.gray-placeholder').forEach(el => el.classList.add('gray-placeholder'));
       }
     }
 
@@ -175,10 +177,10 @@
       document.getElementById('scanned-text').value = '';
       document.getElementById('order-number').value = '';
       document.querySelector('input[name="status"]:checked').checked = false;
-      document.getElementById('order-number-field').style.display = 'none';
       document.getElementById('order-number-field').querySelector('input').disabled = true;
       document.getElementById('order-number-field').querySelector('label').classList.add('disabled');
-      document.getElementById('submit-placeholder').classList.add('hidden');
+      document.getElementById('order-submit-placeholder').classList.add('disabled');
+      document.getElementById('order-submit-placeholder').querySelector('button').disabled = true;
       document.getElementById('second-scanned-text').value = '';
       toggleFields();
     }
