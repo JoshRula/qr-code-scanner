@@ -12,16 +12,21 @@
       text-align: center;
       margin: 20px;
     }
-    #reader {
-      width: 250px;
-      height: 250px;
+    h1 {
+      margin-bottom: 20px;
+    }
+    #reader, #second-reader, .gray-placeholder {
+      width: 200px;
+      height: 200px;
       margin: 20px auto;
-      border: 1px solid #ccc;
-      padding: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+    }
+    .gray-placeholder {
+      background-color: #ccc;
+      border: 1px solid #999;
     }
     .field {
       margin: 10px 0;
@@ -29,83 +34,129 @@
     .radio-group {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 20px;
+      margin: 10px 0;
+      font-size: 1.2em;
     }
     .order-number-field {
       display: none;
+      margin-top: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    .disabled {
+      color: gray;
     }
   </style>
 </head>
 <body>
   <h1>DD Inventory System</h1>
-  <p>Scan <strong>ITEM</strong></p>
-  <div id="reader">Tap here to scan</div>
+  <p>Scan</p>
+  <p><strong style="font-size: 1.1em; text-decoration: underline;">ITEM</strong></p>
+  <div id="reader"><img src="qr.svg" alt="Scan QR code" width="180"></div>
   <div class="field">
-    <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
+    <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly style="font-size: 1.2em;">
   </div>
   <div class="radio-group">
-    <label><input type="radio" name="status" value="IN" onclick="toggleOrderNumberField()"> IN</label>
-    <label><input type="radio" name="status" value="OUT" onclick="toggleOrderNumberField()"> OUT</label>
+    <label><input type="radio" name="status" value="IN" onclick="toggleFields()"> IN</label>
+    <label><input type="radio" name="status" value="OUT" onclick="toggleFields()"> OUT</label>
   </div>
-  <div class="field order-number-field">
-    <label for="order-number">ORDER NUMBER</label>
-    <input type="number" id="order-number" min="10000" max="100000" placeholder="Enter order number">
+  <div class="field order-number-field" id="order-number-field">
+    <label for="order-number" class="disabled">ORDER NUMBER</label>
+    <input type="number" id="order-number" min="10000" max="100000" placeholder="Enter order number" disabled>
   </div>
-  <button onclick="handleSubmit()">Submit</button>
+  <div id="submit-placeholder" class="hidden">
+    <button onclick="handleSubmit()">Submit</button>
+  </div>
+
+  <div id="second-scan-section" class="disabled">
+    <p>Scan</p>
+    <p><strong style="font-size: 1.1em; text-decoration: underline;">LOCATION</strong></p>
+    <div id="second-reader" class="gray-placeholder"><img src="grayqr.svg" alt="Scan QR code" width="180"></div>
+    <div class="field">
+      <input type="text" id="second-scanned-text" placeholder="Scanned text will appear here" readonly style="font-size: 1.2em;" class="gray-placeholder">
+    </div>
+    <button class="gray-placeholder" disabled>Submit</button>
+  </div>
 
   <script>
-    function onScanSuccess(decodedText, decodedResult) {
-      console.log(`Code scanned = ${decodedText}`, decodedResult);
+    const html5QrCode = new Html5Qrcode("reader");
+    const secondHtml5QrCode = new Html5Qrcode("second-reader");
+
+    document.getElementById('reader').addEventListener('click', () => {
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 200 },
+        onScanSuccess
+      ).catch(err => {
+        console.error("Error starting QR code scanner: ", err);
+      });
+    });
+
+    document.getElementById('second-reader').addEventListener('click', () => {
+      secondHtml5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 200 },
+        onSecondScanSuccess
+      ).catch(err => {
+        console.error("Error starting QR code scanner: ", err);
+      });
+    });
+
+    function onScanSuccess(decodedText) {
       document.getElementById('scanned-text').value = decodedText;
-      html5QrCode.stop().then(ignore => {
-        document.getElementById('reader').innerText = 'Tap here to scan';
+      html5QrCode.stop().then(() => {
+        document.getElementById('reader').innerHTML = '<img src="qr.svg" alt="Scan QR code" width="180">';
       }).catch(err => {
         console.error("Error stopping QR code scanner: ", err);
       });
     }
 
-    const html5QrCode = new Html5Qrcode("reader");
-
-    document.getElementById('reader').addEventListener('click', () => {
-      html5QrCode.start(
-        { facingMode: "environment" },
-        {
-          fps: 10, // Optional, frame per seconds for qr code scanning
-          qrbox: 200 // Optional, if you want bounded box UI
-        },
-        onScanSuccess
-      ).catch(err => {
-        console.error("Error starting QR code scanner: ", err);
+    function onSecondScanSuccess(decodedText) {
+      document.getElementById('second-scanned-text').value = decodedText;
+      secondHtml5QrCode.stop().then(() => {
+        document.getElementById('second-reader').innerHTML = '<img src="qr.svg" alt="Scan QR code" width="180">';
+      }).catch(err => {
+        console.error("Error stopping second QR code scanner: ", err);
       });
+    }
 
-      document.getElementById('reader').innerText = '';
-    });
-
-    function toggleOrderNumberField() {
+    function toggleFields() {
       const status = document.querySelector('input[name="status"]:checked').value;
-      const orderNumberField = document.querySelector('.order-number-field');
-      if (status === 'OUT') {
-        orderNumberField.style.display = 'block';
-      } else {
+      const orderNumberField = document.getElementById('order-number-field');
+      const submitPlaceholder = document.getElementById('submit-placeholder');
+      const secondScanSection = document.getElementById('second-scan-section');
+
+      if (status === 'IN') {
         orderNumberField.style.display = 'none';
+        orderNumberField.querySelector('input').disabled = true;
+        orderNumberField.querySelector('label').classList.add('disabled');
+        secondScanSection.classList.remove('disabled');
+        secondScanSection.querySelectorAll('.gray-placeholder').forEach(el => el.classList.remove('gray-placeholder'));
+        secondScanSection.querySelectorAll('button, input').forEach(el => el.disabled = false);
+        submitPlaceholder.classList.add('hidden');
+      } else if (status === 'OUT') {
+        orderNumberField.style.display = 'block';
+        orderNumberField.querySelector('input').disabled = false;
+        orderNumberField.querySelector('label').classList.remove('disabled');
+        secondScanSection.classList.add('disabled');
+        secondScanSection.querySelectorAll('.gray-placeholder').forEach(el => el.classList.add('gray-placeholder'));
+        secondScanSection.querySelectorAll('button, input').forEach(el => el.disabled = true);
+        submitPlaceholder.classList.remove('hidden');
       }
     }
 
     function handleSubmit() {
       const scannedText = document.getElementById('scanned-text').value;
-      const status = document.querySelector('input[name="status"]:checked');
+      const status = document.querySelector('input[name="status"]:checked').value;
 
       if (!scannedText) {
         alert("Please scan an item.");
         return;
       }
 
-      if (!status) {
-        alert("Please select a status (IN/OUT).");
-        return;
-      }
-
-      if (status.value === 'OUT') {
+      if (status === 'OUT') {
         const orderNumber = document.getElementById('order-number').value;
         if (!orderNumber || orderNumber < 10000 || orderNumber > 100000) {
           alert("Please enter a valid order number between 10000 and 100000.");
@@ -114,7 +165,7 @@
 
         const data = {
           itemNumber: scannedText,
-          status: status.value,
+          status: status,
           orderNumber: orderNumber
         };
 
@@ -134,9 +185,9 @@
           console.error('Error:', error);
           alert('Error: ' + error.message);
         });
-      } else if (status.value === 'IN') {
+      } else if (status === 'IN') {
         localStorage.setItem('itemNumber', scannedText);
-        window.location.href = 'location.html';
+        toggleFields();
       }
     }
 
@@ -144,8 +195,13 @@
       document.getElementById('scanned-text').value = '';
       document.querySelector('input[name="status"]:checked').checked = false;
       document.getElementById('order-number').value = '';
-      document.querySelector('.order-number-field').style.display = 'none';
+      document.getElementById('order-number').disabled = true;
+      document.getElementById('order-number-field').style.display = 'none';
+      document.getElementById('submit-placeholder').classList.add('hidden');
+      document.getElementById('second-scan-section').classList.add('disabled');
+      document.getElementById('second-scanned-text').value = '';
       html5QrCode.clear();
+      secondHtml5QrCode.clear();
     }
   </script>
 </body>
