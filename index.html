@@ -1,190 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DD Inventory System</title>
-  <link rel="stylesheet" href="src/styles.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DD Inventory System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-  <header>
     <h1>DD Inventory System</h1>
-  </header>
-  <main>
-    <p>Scan</p>
-    <p><strong style="font-size: 1.1em; text-decoration: underline;">ITEM</strong></p>
-    <div id="reader-container">
-      <img src="qr.svg" alt="Scan QR code" width="180" id="reader">
+    <div class="container">
+        <p>Scan ITEM</p>
+        <div class="qr-code" id="qr-code-button">
+            <img src="qr-code.png" alt="QR Code">
+        </div>
+        <input type="text" id="scanned-text" placeholder="SCANNED TEXT">
+        <div class="buttons">
+            <button id="in-button">IN</button>
+            <button id="out-button">OUT</button>
+        </div>
+        <div id="additional-content"></div>
+        <div id="qr-reader" style="display:none;"></div>
     </div>
-    <div class="field">
-      <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
-    </div>
-    <div class="radio-group">
-      <label><input type="radio" name="status" value="IN" onclick="toggleFields()"> IN</label>
-      <label><input type="radio" name="status" value="OUT" onclick="toggleFields()"> OUT</label>
-    </div>
-    <div class="field order-number-field" id="order-number-field">
-      <label for="order-number" class="disabled">ORDER NUMBER</label>
-      <input type="number" id="order-number" min="10000" max="100000" placeholder="Enter order number" disabled>
-    </div>
-    <div id="order-submit-placeholder" class="disabled">
-      <button class="gray-button" disabled>Submit</button>
-    </div>
-
-    <div id="second-scan-section" class="disabled">
-      <p>Scan</p>
-      <p><strong style="font-size: 1.1em; text-decoration: underline;">LOCATION</strong></p>
-      <div id="second-reader-container">
-        <img src="grayqr.svg" alt="Scan QR code" width="180" id="second-reader">
-      </div>
-      <div class="field">
-        <input type="text" id="second-scanned-text" placeholder="Scanned text will appear here" readonly class="gray-placeholder">
-      </div>
-      <button class="gray-button" disabled>Submit</button>
-    </div>
-  </main>
-
-  <script>
-    const html5QrCode = new Html5QrCode("reader-container");
-    const secondHtml5QrCode = new Html5QrCode("second-reader-container");
-
-    document.getElementById('reader').addEventListener('click', () => {
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 200 },
-        onScanSuccess
-      ).catch(err => {
-        console.error("Error starting QR code scanner: ", err);
-      });
-    });
-
-    document.getElementById('second-reader').addEventListener('click', () => {
-      secondHtml5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 200 },
-        onSecondScanSuccess
-      ).catch(err => {
-        console.error("Error starting QR code scanner: ", err);
-      });
-    });
-
-    function onScanSuccess(decodedText) {
-      document.getElementById('scanned-text').value = decodedText;
-      html5QrCode.stop().then(() => {
-        document.getElementById('reader-container').innerHTML = '<img src="qr.svg" alt="Scan QR code" width="180" id="reader">';
-      }).catch(err => {
-        console.error("Error stopping QR code scanner: ", err);
-      });
-    }
-
-    function onSecondScanSuccess(decodedText) {
-      document.getElementById('second-scanned-text').value = decodedText;
-      secondHtml5QrCode.stop().then(() => {
-        if (document.querySelector('input[name="status"]:checked').value === 'IN') {
-          document.getElementById('second-reader-container').innerHTML = '<img src="qr.svg" alt="Scan QR code" width="180" id="second-reader">';
-        } else {
-          document.getElementById('second-reader-container').innerHTML = '<img src="grayqr.svg" alt="Scan QR code" width="180" id="second-reader">';
-        }
-      }).catch(err => {
-        console.error("Error stopping second QR code scanner: ", err);
-      });
-    }
-
-    function toggleFields() {
-      const status = document.querySelector('input[name="status"]:checked').value;
-      const orderNumberField = document.getElementById('order-number-field');
-      const orderSubmitPlaceholder = document.getElementById('order-submit-placeholder');
-      const secondScanSection = document.getElementById('second-scan-section');
-
-      if (status === 'IN') {
-        orderNumberField.querySelector('input').disabled = true;
-        orderNumberField.querySelector('label').classList.add('disabled');
-        orderSubmitPlaceholder.classList.add('disabled');
-        orderSubmitPlaceholder.querySelector('button').disabled = true;
-
-        secondScanSection.classList.remove('disabled');
-        secondScanSection.querySelectorAll('.gray-placeholder').forEach(el => el.classList.remove('gray-placeholder'));
-        secondScanSection.querySelectorAll('button, input').forEach(el => el.disabled = false);
-        document.getElementById('second-reader-container').innerHTML = '<img src="qr.svg" alt="Scan QR code" width="180" id="second-reader">';
-      } else if (status === 'OUT') {
-        orderNumberField.querySelector('input').disabled = false;
-        orderNumberField.querySelector('label').classList.remove('disabled');
-        orderSubmitPlaceholder.classList.remove('disabled');
-        orderSubmitPlaceholder.querySelector('button').disabled = false;
-
-        secondScanSection.classList.add('disabled');
-        secondScanSection.querySelectorAll('button, input').forEach(el => el.disabled = true);
-        secondScanSection.querySelectorAll('.gray-placeholder').forEach(el => el.classList.add('gray-placeholder'));
-        document.getElementById('second-reader-container').innerHTML = '<img src="grayqr.svg" alt="Scan QR code" width="180" id="second-reader">';
-      }
-    }
-
-    function handleSubmit() {
-      const scannedText = document.getElementById('scanned-text').value;
-      const status = document.querySelector('input[name="status"]:checked').value;
-
-      if (!scannedText) {
-        alert("Please scan an item.");
-        return;
-      }
-
-      if (status === 'OUT') {
-        const orderNumber = document.getElementById('order-number').value;
-        if (!orderNumber || orderNumber < 10000 || orderNumber > 100000) {
-          alert("Please enter a valid order number between 10000 and 100000.");
-          return;
-        }
-
-        const data = {
-          itemNumber: scannedText,
-          status: status,
-          orderNumber: orderNumber
-        };
-
-        fetch('https://script.google.com/macros/s/AKfycbwSznRJhCm2rugfE972ugVGvcomrPH-WpAJvJMrLcfVX3B9CwZF0Uz1Og0yy5T03bltrQ/exec', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        }).then(response => response.json()).then(response => {
-          alert(response.message);
-          resetForm();
-        }).catch(error => {
-          console.error('Error:', error);
-        });
-      } else if (status === 'IN') {
-        const secondScannedText = document.getElementById('second-scanned-text').value;
-
-        if (!secondScannedText) {
-          alert("Please scan a location.");
-          return;
-        }
-
-        const data = {
-          itemNumber: scannedText,
-          status: status,
-          location: secondScannedText
-        };
-
-        fetch('https://script.google.com/macros/s/AKfycbwSznRJhCm2rugfE972ugVGvcomrPH-WpAJvJMrLcfVX3B9CwZF0Uz1Og0yy5T03bltrQ/exec', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        }).then(response => response.json()).then(response => {
-          alert(response.message);
-          resetForm();
-        }).catch(error => {
-          console.error('Error:', error);
-        });
-      }
-    }
-
-    function resetForm() {
-      document.getElementById('scanned-text').value = '';
-      document.getElementById('order-number').value = '';
-      document.querySelector('input[name="status"]:checked').checked = false;
-      document.getElementById('order-number-field').querySelector('
+    <script src="script.js"></script>
+</body>
+</html>
