@@ -64,3 +64,8 @@ h1 {
         transform: translateY(100%);
     }
 }
+
+#qr-reader, #qr-reader-location {
+    width: 300px;
+    margin: 0 auto;
+}
