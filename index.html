@@ -8,8 +8,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-  <div id="container">
+  <header>
     <h1>DD Inventory System</h1>
+  </header>
+  <main>
     <p>Scan</p>
     <p><strong style="font-size: 1.1em; text-decoration: underline;">ITEM</strong></p>
     <div id="reader"><img src="qr.svg" alt="Scan QR code" width="180"></div>
@@ -37,7 +39,7 @@
       </div>
       <button class="gray-placeholder" disabled>Submit</button>
     </div>
-  </div>
+  </main>
 
   <script>
     const html5QrCode = new Html5Qrcode("reader");
@@ -134,23 +136,42 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-          alert('Success: ' + JSON.stringify(data));
-          clearFields();
-        })
-        .catch((error) => {
+        }).then(response => response.json()).then(response => {
+          alert(response.message);
+          resetForm();
+        }).catch(error => {
           console.error('Error:', error);
-          alert('Error: ' + error.message);
         });
       } else if (status === 'IN') {
-        localStorage.setItem('itemNumber', scannedText);
-        toggleFields();
+        const secondScannedText = document.getElementById('second-scanned-text').value;
+
+        if (!secondScannedText) {
+          alert("Please scan a location.");
+          return;
+        }
+
+        const data = {
+          itemNumber: scannedText,
+          status: status,
+          location: secondScannedText
+        };
+
+        fetch('https://script.google.com/macros/s/AKfycbwSznRJhCm2rugfE972ugVGvcomrPH-WpAJvJMrLcfVX3B9CwZF0Uz1Og0yy5T03bltrQ/exec', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        }).then(response => response.json()).then(response => {
+          alert(response.message);
+          resetForm();
+        }).catch(error => {
+          console.error('Error:', error);
+        });
       }
     }
 
-    function clearFields() {
+    function resetForm() {
       document.getElementById('scanned-text').value = '';
       document.getElementById('order-number').value = '';
       document.querySelector('input[name="status"]:checked').checked = false;
