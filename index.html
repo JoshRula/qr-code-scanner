@@ -8,33 +8,35 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-  <h1>DD Inventory System</h1>
-  <p>Scan</p>
-  <p><strong style="font-size: 1.1em; text-decoration: underline;">ITEM</strong></p>
-  <div id="reader"><img src="qr.svg" alt="Scan QR code" width="180"></div>
-  <div class="field">
-    <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
-  </div>
-  <div class="radio-group">
-    <label><input type="radio" name="status" value="IN" onclick="toggleFields()"> IN</label>
-    <label><input type="radio" name="status" value="OUT" onclick="toggleFields()"> OUT</label>
-  </div>
-  <div class="field order-number-field" id="order-number-field">
-    <label for="order-number" class="disabled">ORDER NUMBER</label>
-    <input type="number" id="order-number" min="10000" max="100000" placeholder="Enter order number" disabled>
-  </div>
-  <div id="submit-placeholder" class="hidden">
-    <button onclick="handleSubmit()">Submit</button>
-  </div>
-
-  <div id="second-scan-section" class="disabled">
+  <div id="container">
+    <h1>DD Inventory System</h1>
     <p>Scan</p>
-    <p><strong style="font-size: 1.1em; text-decoration: underline;">LOCATION</strong></p>
-    <div id="second-reader" class="gray-placeholder"><img src="grayqr.svg" alt="Scan QR code" width="180"></div>
+    <p><strong style="font-size: 1.1em; text-decoration: underline;">ITEM</strong></p>
+    <div id="reader"><img src="qr.svg" alt="Scan QR code" width="180"></div>
     <div class="field">
-      <input type="text" id="second-scanned-text" placeholder="Scanned text will appear here" readonly class="gray-placeholder">
+      <input type="text" id="scanned-text" placeholder="Scanned text will appear here" readonly>
     </div>
-    <button class="gray-placeholder" disabled>Submit</button>
+    <div class="radio-group">
+      <label><input type="radio" name="status" value="IN" onclick="toggleFields()"> IN</label>
+      <label><input type="radio" name="status" value="OUT" onclick="toggleFields()"> OUT</label>
+    </div>
+    <div class="field order-number-field" id="order-number-field">
+      <label for="order-number" class="disabled">ORDER NUMBER</label>
+      <input type="number" id="order-number" min="10000" max="100000" placeholder="Enter order number" disabled>
+    </div>
+    <div id="submit-placeholder" class="hidden">
+      <button onclick="handleSubmit()">Submit</button>
+    </div>
+
+    <div id="second-scan-section" class="disabled">
+      <p>Scan</p>
+      <p><strong style="font-size: 1.1em; text-decoration: underline;">LOCATION</strong></p>
+      <div id="second-reader" class="gray-placeholder"><img src="grayqr.svg" alt="Scan QR code" width="180"></div>
+      <div class="field">
+        <input type="text" id="second-scanned-text" placeholder="Scanned text will appear here" readonly class="gray-placeholder">
+      </div>
+      <button class="gray-placeholder" disabled>Submit</button>
+    </div>
   </div>
 
   <script>
@@ -150,10 +152,12 @@
 
     function clearFields() {
       document.getElementById('scanned-text').value = '';
-      document.querySelector('input[name="status"]:checked').checked = false;
       document.getElementById('order-number').value = '';
-      document.getElementById('order-number').disabled = true;
+      document.querySelector('input[name="status"]:checked').checked = false;
+      document.getElementById('order-number-field').style.display = 'none';
+      document.getElementById('order-number-field').querySelector('input').disabled = true;
       document.getElementById('order-number-field').querySelector('label').classList.add('disabled');
+      document.getElementById('submit-placeholder').classList.add('hidden');
       document.getElementById('second-scanned-text').value = '';
       toggleFields();
     }
