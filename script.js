@@ -7,7 +7,7 @@ document.getElementById('in-button').addEventListener('click', function() {
             </div>
             <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
             <button>SUBMIT</button>
-            <div id="qr-reader-location" class="qr-reader" style="display:none;"></div> <!-- Added class "qr-reader" -->
+            <div id="qr-reader-location" class="qr-reader" style="display:none;"></div>
         </div>
     `);
     initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
@@ -62,7 +62,10 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
         { facingMode: "environment" },
         {
             fps: 10,
-            qrbox: 20 // Set the size of the QR code box to match the image size
+            qrbox: {
+                width: 150,
+                height: 150
+            }
         },
         qrCodeMessage => {
             document.getElementById(inputId).value = qrCodeMessage;
