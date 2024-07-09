@@ -3,7 +3,7 @@ document.getElementById('in-button').addEventListener('click', function() {
         <div>
             <p>Scan LOCATION</p>
             <div class="qr-code" id="qr-code-location">
-                <img src="qr-code.png" alt="QR Code">
+                <img src="qr-code.PNG" alt="QR Code">
             </div>
             <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
             <button>SUBMIT</button>
@@ -45,11 +45,13 @@ function switchContent(content) {
 }
 
 function initializeQrCodeScanner(readerId, inputId, previewId) {
+    console.log(`Initializing QR Code Scanner for ${readerId}`);
     const qrReader = document.getElementById(readerId);
     qrReader.style.display = 'block';
 
     let scanner = new Instascan.Scanner({ video: document.getElementById(previewId) });
     scanner.addListener('scan', function (content) {
+        console.log(`Scanned content: ${content}`);
         document.getElementById(inputId).value = content;
         scanner.stop();
         qrReader.style.display = 'none';
