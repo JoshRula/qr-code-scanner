@@ -25,7 +25,7 @@ document.getElementById('out-button').addEventListener('click', function() {
 });
 
 document.getElementById('qr-code-button').addEventListener('click', function() {
-    initializeQrCodeScanner('reader', 'scanned-text');
+    initializeQrCodeScanner('reader', 'scanned-text', 'qr-code-button');
 });
 
 function switchContent(content) {
@@ -44,9 +44,12 @@ function switchContent(content) {
     }, 500); // Match this duration to the exit animation duration
 }
 
-function initializeQrCodeScanner(readerId, inputId) {
+function initializeQrCodeScanner(readerId, inputId, qrCodeButtonId) {
     const qrReader = document.getElementById('qr-reader');
     qrReader.style.display = 'block';
+    
+    const qrCodeButton = document.getElementById(qrCodeButtonId);
+    qrCodeButton.innerHTML = ''; // Clear the QR code image
 
     const html5QrCode = new Html5Qrcode(readerId);
     html5QrCode.start(
