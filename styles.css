@@ -26,6 +26,11 @@ h1 {
     height: 150px;
 }
 
+.qr-reader {
+    width: 165px; /* 10% larger than 150px */
+    height: 165px; /* 10% larger than 150px */
+}
+
 .buttons {
     margin-top: 20px;
 }
