@@ -1,28 +1,30 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>QR Code Scanner</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
-    <link rel="stylesheet" href="src/styles.css" />
-    <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
-  </head>
-
-  <body>
-    <div id="container">
-      <h1>DD Inventory System</h1>
-
-      <a id="btn-scan-qr">
-        <img src="qr.PNG">
-      <a/>
-
-      <canvas hidden="" id="qr-canvas"></canvas>
-
-      <div id="qr-result" hidden="">
-        <b>Data:</b> <span id="outputData"></span>
-      </div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DD Inventory System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <h1>DD Inventory System</h1>
+    <div class="container">
+        <p>Scan ITEM</p>
+        <div class="qr-code" id="qr-code-button">
+            <img src="qr-code.png" alt="QR Code">
+        </div>
+        <input type="text" id="scanned-text" placeholder="SCANNED TEXT">
+        <div class="buttons">
+            <button id="in-button">IN</button>
+            <button id="out-button">OUT</button>
+        </div>
+        <div id="additional-content"></div>
+        <div id="qr-reader" style="display:none;">
+            <video id="preview"></video>
+        </div>
     </div>
-
-    <script src="./src/qrCodeScanner.js"></script>
-  </body>
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="script.js"></script>
+</body>
 </html>
