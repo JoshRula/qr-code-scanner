@@ -7,10 +7,10 @@ document.getElementById('in-button').addEventListener('click', function() {
             </div>
             <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
             <button>SUBMIT</button>
-            <div id="qr-reader-location" style="display:none;"></div> <!-- Added for QR scanning -->
+            <div id="qr-reader-location" style="display:none;"></div>
         </div>
     `);
-    initializeQrCodeScanner('qr-reader-location', 'scanned-text-location'); // Initialize QR scanner
+    initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
 });
 
 document.getElementById('out-button').addEventListener('click', function() {
@@ -23,7 +23,7 @@ document.getElementById('out-button').addEventListener('click', function() {
 });
 
 document.getElementById('qr-code-button').addEventListener('click', function() {
-    initializeQrCodeScanner('qr-reader', 'scanned-text'); // Initialize QR scanner
+    initializeQrCodeScanner('qr-reader', 'scanned-text', 'qr-code-button');
 });
 
 function switchContent(content) {
@@ -42,23 +42,31 @@ function switchContent(content) {
     }, 500); // Match this duration to the exit animation duration
 }
 
-// Function to initialize QR code scanner
-function initializeQrCodeScanner(readerId, inputId) {
-    const qrReader = document.getElementById(readerId);
-    qrReader.style.display = 'block';
+function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
+    // Check if Html5Qrcode is defined
+    if (typeof Html5Qrcode === 'undefined') {
+        console.error('Html5Qrcode is not defined. Ensure the html5-qrcode library is loaded correctly.');
+        return;
+    }
+    
+    const qrCodeContainer = document.getElementById(qrCodeContainerId);
+    qrCodeContainer.innerHTML = ''; // Clear the QR code image
+    
+    const qrReader = document.createElement('div'); // Create a new div for the video
+    qrReader.id = readerId;
+    qrCodeContainer.appendChild(qrReader); // Append the video div to the container
 
     const html5QrCode = new Html5Qrcode(readerId);
     html5QrCode.start(
-        { facingMode: "environment" }, // Use the environment (rear) camera
+        { facingMode: "environment" },
         {
-            fps: 10, // Set the frame rate to 10 fps
-            qrbox: 250 // Define the size of the QR code box
+            fps: 10,
+            qrbox: 250
         },
         qrCodeMessage => {
-            // When a QR code is scanned successfully
-            document.getElementById(inputId).value = qrCodeMessage; // Set the scanned message in the input field
+            document.getElementById(inputId).value = qrCodeMessage;
             html5QrCode.stop().then(() => {
-                qrReader.style.display = 'none'; // Hide the QR reader after scanning
+                qrCodeContainer.innerHTML = '<img src="qr-code.png" alt="QR Code">'; // Restore the QR code image
             });
         },
         errorMessage => {
