@@ -57,15 +57,12 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
     qrReader.classList.add('qr-reader'); // Add class for styling
     qrCodeContainer.appendChild(qrReader); // Append the video div to the container
 
-    const html5QrCode = new Html5Qrcode(readerId);
+    const html5QrCode = new Html5QrCode(readerId);
     html5QrCode.start(
         { facingMode: "environment" },
         {
             fps: 10,
-            qrbox: {
-                width: 150,
-                height: 150
-            }
+            qrbox: 250 // Set the size of the QR code box
         },
         qrCodeMessage => {
             document.getElementById(inputId).value = qrCodeMessage;
