@@ -27,8 +27,8 @@ h1 {
 }
 
 .qr-reader {
-    width: 165px; /* 10% larger than 150px */
-    height: 165px; /* 10% larger than 150px */
+    width: 150px;
+    height: 150px;
 }
 
 .buttons {
