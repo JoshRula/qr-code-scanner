@@ -36,8 +36,8 @@ h1 {
     max-height: 150px !important;
     overflow: hidden;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 .buttons {
