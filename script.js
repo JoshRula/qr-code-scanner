@@ -7,7 +7,7 @@ document.getElementById('in-button').addEventListener('click', function() {
             </div>
             <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
             <button>SUBMIT</button>
-            <div id="qr-reader-location" style="display:none;"></div>
+            <div id="qr-reader-location" class="qr-reader" style="display:none;"></div> <!-- Added class "qr-reader" -->
         </div>
     `);
     initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
@@ -54,6 +54,7 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
     
     const qrReader = document.createElement('div'); // Create a new div for the video
     qrReader.id = readerId;
+    qrReader.classList.add('qr-reader'); // Add class for styling
     qrCodeContainer.appendChild(qrReader); // Append the video div to the container
 
     const html5QrCode = new Html5Qrcode(readerId);
