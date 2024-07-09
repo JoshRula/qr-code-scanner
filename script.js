@@ -57,7 +57,7 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
     qrReader.classList.add('qr-reader'); // Add class for styling
     qrCodeContainer.appendChild(qrReader); // Append the video div to the container
 
-    const html5QrCode = new Html5QrCode(readerId);
+    const html5QrCode = new Html5Qrcode(readerId);
     html5QrCode.start(
         { facingMode: "environment" },
         {
