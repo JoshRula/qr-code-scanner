@@ -7,12 +7,10 @@ document.getElementById('in-button').addEventListener('click', function() {
             </div>
             <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
             <button>SUBMIT</button>
-            <div id="qr-reader-location" style="display:none;">
-                <div id="reader-location"></div>
-            </div>
+            <div id="qr-reader-location" style="display:none;"></div>
         </div>
     `);
-    initializeQrCodeScanner('reader-location', 'scanned-text-location');
+    initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
 });
 
 document.getElementById('out-button').addEventListener('click', function() {
@@ -25,7 +23,7 @@ document.getElementById('out-button').addEventListener('click', function() {
 });
 
 document.getElementById('qr-code-button').addEventListener('click', function() {
-    initializeQrCodeScanner('reader', 'scanned-text', 'qr-code-button');
+    initializeQrCodeScanner('qr-reader', 'scanned-text', 'qr-code-button');
 });
 
 function switchContent(content) {
@@ -46,7 +44,7 @@ function switchContent(content) {
 
 function initializeQrCodeScanner(readerId, inputId, qrCodeButtonId) {
     const qrCodeButton = document.getElementById(qrCodeButtonId);
-    qrCodeButton.innerHTML = `<div id="${readerId}"></div>`; // Replace the QR code image with the video preview
+    qrCodeButton.innerHTML = '<div id="' + readerId + '"></div>'; // Replace QR code image with video preview
 
     const html5QrCode = new Html5Qrcode(readerId);
     html5QrCode.start(
@@ -59,12 +57,8 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeButtonId) {
             document.getElementById(inputId).value = qrCodeMessage;
             html5QrCode.stop().then(() => {
                 document.getElementById(readerId).innerHTML = "";
+                qrCodeButton.innerHTML = '<img src="qr-code.png" alt="QR Code">'; // Restore QR code image after scan
             });
         },
         errorMessage => {
-            console.log(`QR Code no longer in front of camera. Error = ${errorMessage}`);
-        })
-        .catch(err => {
-            console.log(`Unable to start scanning, error: ${err}`);
-        });
-}
+            console.log(`
