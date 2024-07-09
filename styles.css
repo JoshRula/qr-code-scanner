@@ -32,10 +32,10 @@ h1 {
 }
 
 .qr-reader {
-    width: 150px !important;
-    height: 150px !important;
-    max-width: 150px !important;
-    max-height: 150px !important;
+    width: 150px ;
+    height: 150px ;
+    max-width: 150px ;
+    max-height: 150px ;
     overflow: hidden;
     display: flex;
     justify-content: center;
