@@ -6,12 +6,12 @@ body {
   font-family: sans-serif;
   padding: 0 10px;
   height: 100%;
-  background: black;
+  background: white;
   margin: 0;
 }
 
 h1 {
-  color: white;
+  color: black;
   margin: 0;
   padding: 15px;
 }
