@@ -7,10 +7,12 @@ document.getElementById('in-button').addEventListener('click', function() {
             </div>
             <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
             <button>SUBMIT</button>
-            <div id="qr-reader-location" style="display:none;"></div>
+            <div id="qr-reader-location" style="display:none;">
+                <video id="preview-location"></video>
+            </div>
         </div>
     `);
-    initializeQrCodeScanner('qr-reader-location', 'scanned-text-location');
+    initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'preview-location');
 });
 
 document.getElementById('out-button').addEventListener('click', function() {
@@ -23,7 +25,7 @@ document.getElementById('out-button').addEventListener('click', function() {
 });
 
 document.getElementById('qr-code-button').addEventListener('click', function() {
-    initializeQrCodeScanner('qr-reader', 'scanned-text');
+    initializeQrCodeScanner('qr-reader', 'scanned-text', 'preview');
 });
 
 function switchContent(content) {
@@ -42,26 +44,24 @@ function switchContent(content) {
     }, 500); // Match this duration to the exit animation duration
 }
 
-function initializeQrCodeScanner(readerId, inputId) {
+function initializeQrCodeScanner(readerId, inputId, previewId) {
     const qrReader = document.getElementById(readerId);
     qrReader.style.display = 'block';
 
-    const html5QrCode = new Html5Qrcode(readerId);
-    html5QrCode.start(
-        { facingMode: "environment" }, 
-        {
-            fps: 10,
-            qrbox: 250
-        },
-        qrCodeMessage => {
-            document.getElementById(inputId).value = qrCodeMessage;
-            html5QrCode.stop();
-            qrReader.style.display = 'none';
-        },
-        errorMessage => {
-            console.log(`QR Code no longer in front of camera. Error = ${errorMessage}`);
-        })
-        .catch(err => {
-            console.log(`Unable to start scanning, error: ${err}`);
-        });
+    let scanner = new Instascan.Scanner({ video: document.getElementById(previewId) });
+    scanner.addListener('scan', function (content) {
+        document.getElementById(inputId).value = content;
+        scanner.stop();
+        qrReader.style.display = 'none';
+    });
+
+    Instascan.Camera.getCameras().then(function (cameras) {
+        if (cameras.length > 0) {
+            scanner.start(cameras[0]);
+        } else {
+            console.error('No cameras found.');
+        }
+    }).catch(function (e) {
+        console.error(e);
+    });
 }
