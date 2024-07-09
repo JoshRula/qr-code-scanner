@@ -35,7 +35,6 @@ h1 {
     max-width: 150px !important;
     max-height: 150px !important;
     overflow: hidden;
-    display: flex;
     justify-content: center !important;
     align-items: center !important;
 }
