@@ -21,6 +21,9 @@ h1 {
     cursor: pointer;
     width: 150px;
     height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .qr-code img {
