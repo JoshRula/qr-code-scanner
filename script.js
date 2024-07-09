@@ -3,16 +3,16 @@ document.getElementById('in-button').addEventListener('click', function() {
         <div>
             <p>Scan LOCATION</p>
             <div class="qr-code" id="qr-code-location">
-                <img src="qr-code.PNG" alt="QR Code">
+                <img src="qr-code.png" alt="QR Code">
             </div>
             <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
             <button>SUBMIT</button>
             <div id="qr-reader-location" style="display:none;">
-                <video id="preview-location"></video>
+                <div id="reader-location"></div>
             </div>
         </div>
     `);
-    initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'preview-location');
+    initializeQrCodeScanner('reader-location', 'scanned-text-location');
 });
 
 document.getElementById('out-button').addEventListener('click', function() {
@@ -25,7 +25,7 @@ document.getElementById('out-button').addEventListener('click', function() {
 });
 
 document.getElementById('qr-code-button').addEventListener('click', function() {
-    initializeQrCodeScanner('qr-reader', 'scanned-text', 'preview');
+    initializeQrCodeScanner('reader', 'scanned-text');
 });
 
 function switchContent(content) {
@@ -44,26 +44,28 @@ function switchContent(content) {
     }, 500); // Match this duration to the exit animation duration
 }
 
-function initializeQrCodeScanner(readerId, inputId, previewId) {
-    console.log(`Initializing QR Code Scanner for ${readerId}`);
-    const qrReader = document.getElementById(readerId);
+function initializeQrCodeScanner(readerId, inputId) {
+    const qrReader = document.getElementById('qr-reader');
     qrReader.style.display = 'block';
 
-    let scanner = new Instascan.Scanner({ video: document.getElementById(previewId) });
-    scanner.addListener('scan', function (content) {
-        console.log(`Scanned content: ${content}`);
-        document.getElementById(inputId).value = content;
-        scanner.stop();
-        qrReader.style.display = 'none';
-    });
-
-    Instascan.Camera.getCameras().then(function (cameras) {
-        if (cameras.length > 0) {
-            scanner.start(cameras[0]);
-        } else {
-            console.error('No cameras found.');
-        }
-    }).catch(function (e) {
-        console.error(e);
-    });
+    const html5QrCode = new Html5Qrcode(readerId);
+    html5QrCode.start(
+        { facingMode: "environment" },
+        {
+            fps: 10,
+            qrbox: 250
+        },
+        qrCodeMessage => {
+            document.getElementById(inputId).value = qrCodeMessage;
+            html5QrCode.stop().then(() => {
+                document.getElementById(readerId).innerHTML = "";
+                qrReader.style.display = 'none';
+            });
+        },
+        errorMessage => {
+            console.log(`QR Code no longer in front of camera. Error = ${errorMessage}`);
+        })
+        .catch(err => {
+            console.log(`Unable to start scanning, error: ${err}`);
+        });
 }
