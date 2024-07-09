@@ -45,11 +45,8 @@ function switchContent(content) {
 }
 
 function initializeQrCodeScanner(readerId, inputId, qrCodeButtonId) {
-    const qrReader = document.getElementById('qr-reader');
-    qrReader.style.display = 'block';
-    
     const qrCodeButton = document.getElementById(qrCodeButtonId);
-    qrCodeButton.innerHTML = ''; // Clear the QR code image
+    qrCodeButton.innerHTML = `<div id="${readerId}"></div>`; // Replace the QR code image with the video preview
 
     const html5QrCode = new Html5Qrcode(readerId);
     html5QrCode.start(
@@ -62,7 +59,6 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeButtonId) {
             document.getElementById(inputId).value = qrCodeMessage;
             html5QrCode.stop().then(() => {
                 document.getElementById(readerId).innerHTML = "";
-                qrReader.style.display = 'none';
             });
         },
         errorMessage => {
