@@ -21,7 +21,9 @@ h1 {
     cursor: pointer;
     width: 150px;
     height: 150px;
-    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .qr-code img {
@@ -35,12 +37,9 @@ h1 {
     max-width: 150px !important;
     max-height: 150px !important;
     overflow: hidden;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .buttons {
