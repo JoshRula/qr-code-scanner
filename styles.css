@@ -19,11 +19,13 @@ h1 {
 
 .qr-code {
     cursor: pointer;
+    width: 150px;
+    height: 150px;
 }
 
 .qr-code img {
-    width: 150px;
-    height: 150px;
+    width: 100%;
+    height: 100%;
 }
 
 .buttons {
