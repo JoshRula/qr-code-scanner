@@ -62,7 +62,7 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
         { facingMode: "environment" },
         {
             fps: 10,
-            qrbox: 75 // Set the size of the QR code box to match the image size
+            qrbox: 20 // Set the size of the QR code box to match the image size
         },
         qrCodeMessage => {
             document.getElementById(inputId).value = qrCodeMessage;
