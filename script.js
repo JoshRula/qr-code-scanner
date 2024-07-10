@@ -1,3 +1,9 @@
+document.addEventListener("DOMContentLoaded", function() {
+    // Disable the buttons initially
+    document.getElementById('in-button').disabled = true;
+    document.getElementById('out-button').disabled = true;
+});
+
 document.getElementById('in-button').addEventListener('click', function() {
     switchContent(`
         <div>
@@ -66,6 +72,9 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
         },
         qrCodeMessage => {
             document.getElementById(inputId).value = qrCodeMessage;
+            // Enable the buttons after a QR code is scanned
+            document.getElementById('in-button').disabled = false;
+            document.getElementById('out-button').disabled = false;
             html5QrCode.stop().then(() => {
                 qrCodeContainer.innerHTML = '<img src="qr-code.png" alt="QR Code">'; // Restore the QR code image
             });
