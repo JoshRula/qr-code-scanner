@@ -1,4 +1,4 @@
-// with sheets v3
+// with sheets v4
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz3qPuWPYmnKu91nUyW25KTOzBP7yeGZ9oRRZW3L2q7FmG6Kdxm69G2uFZPhUn4sEDWiQ/exec'; // Replace with your web app URL
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -125,7 +125,12 @@ function sendDataToGoogleSheets(data) {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(result => {
         console.log('Success:', result);
     })
@@ -133,5 +138,3 @@ function sendDataToGoogleSheets(data) {
         console.error('Error:', error);
     });
 }
-
-
