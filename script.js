@@ -1,3 +1,4 @@
+// second scan v1
 document.addEventListener("DOMContentLoaded", function() {
     // Disable the buttons initially
     document.getElementById('in-button').disabled = true;
