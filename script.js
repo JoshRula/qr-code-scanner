@@ -1,4 +1,5 @@
-// second scan v1
+//second qr v2
+
 document.addEventListener("DOMContentLoaded", function() {
     // Disable the buttons initially
     document.getElementById('in-button').disabled = true;
@@ -18,6 +19,7 @@ document.getElementById('in-button').addEventListener('click', function() {
         </div>
     `);
 
+    // Add the event listener after the element is created
     document.getElementById('qr-code-location').addEventListener('click', function() {
         initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
     });
@@ -49,6 +51,13 @@ function switchContent(content) {
         
         // Apply entry animation
         additionalContent.style.animation = 'slide-up 0.5s forwards';
+        
+        // Add the event listener for the dynamically created QR code location button
+        if (document.getElementById('qr-code-location')) {
+            document.getElementById('qr-code-location').addEventListener('click', function() {
+                initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
+            });
+        }
     }, 500); // Match this duration to the exit animation duration
 }
 
