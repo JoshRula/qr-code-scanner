@@ -52,6 +52,11 @@ h1 {
     cursor: pointer;
 }
 
+.buttons button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
 #additional-content {
     display: none;
     margin-top: 20px;
