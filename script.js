@@ -1,4 +1,5 @@
-//second qr v2
+// with sheet storage
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz3qPuWPYmnKu91nUyW25KTOzBP7yeGZ9oRRZW3L2q7FmG6Kdxm69G2uFZPhUn4sEDWiQ/exec'; // Replace with your web app URL
 
 document.addEventListener("DOMContentLoaded", function() {
     // Disable the buttons initially
@@ -23,15 +24,27 @@ document.getElementById('in-button').addEventListener('click', function() {
     document.getElementById('qr-code-location').addEventListener('click', function() {
         initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
     });
+
+    document.getElementById('submit-location').addEventListener('click', function() {
+        const scannedText = document.getElementById('scanned-text').value;
+        const scannedTextLocation = document.getElementById('scanned-text-location').value;
+        sendDataToGoogleSheets({ scannedText, scannedTextLocation });
+    });
 });
 
 document.getElementById('out-button').addEventListener('click', function() {
     switchContent(`
         <div>
-            <input type="text" placeholder="ENTER ORDER #" style="margin-bottom: 10px;">
-            <button>SUBMIT</button>
+            <input type="text" id="order-number" placeholder="ENTER ORDER #" style="margin-bottom: 10px;">
+            <button id="submit-order">SUBMIT</button>
         </div>
     `);
+
+    document.getElementById('submit-order').addEventListener('click', function() {
+        const scannedText = document.getElementById('scanned-text').value;
+        const orderNumber = document.getElementById('order-number').value;
+        sendDataToGoogleSheets({ scannedText, orderNumber });
+    });
 });
 
 document.getElementById('qr-code-button').addEventListener('click', function() {
@@ -98,4 +111,22 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
         .catch(err => {
             console.log(`Unable to start scanning, error: ${err}`);
         });
+}
+
+function sendDataToGoogleSheets(data) {
+    fetch(WEB_APP_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log('Success:', result);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
