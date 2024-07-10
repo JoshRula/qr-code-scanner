@@ -1,5 +1,5 @@
 // with sheets v4
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz3qPuWPYmnKu91nUyW25KTOzBP7yeGZ9oRRZW3L2q7FmG6Kdxm69G2uFZPhUn4sEDWiQ/exec'; // Replace with your web app URL
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzx-01Cj_MUys5kM6M8JKlrgOrmcbjYwk8FToMlVzina0Uy1W649PzHePTk6AMApol7/exec'; // Replace with your web app URL
 
 document.addEventListener("DOMContentLoaded", function() {
     // Disable the buttons initially
