@@ -12,11 +12,14 @@ document.getElementById('in-button').addEventListener('click', function() {
                 <img src="qr-code.png" alt="QR Code">
             </div>
             <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
-            <button>SUBMIT</button>
+            <button id="submit-location">SUBMIT</button>
             <div id="qr-reader-location" class="qr-reader" style="display:none;"></div>
         </div>
     `);
-    initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
+
+    document.getElementById('qr-code-location').addEventListener('click', function() {
+        initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
+    });
 });
 
 document.getElementById('out-button').addEventListener('click', function() {
