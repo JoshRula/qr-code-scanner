@@ -1,5 +1,4 @@
-// with sheets v2
-
+// with sheets v3
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz3qPuWPYmnKu91nUyW25KTOzBP7yeGZ9oRRZW3L2q7FmG6Kdxm69G2uFZPhUn4sEDWiQ/exec'; // Replace with your web app URL
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -20,17 +19,7 @@ document.getElementById('in-button').addEventListener('click', function() {
             <div id="qr-reader-location" class="qr-reader" style="display:none;"></div>
         </div>
     `);
-
-    // Add the event listener after the element is created
-    document.getElementById('qr-code-location').addEventListener('click', function() {
-        initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
-    });
-
-    document.getElementById('submit-location').addEventListener('click', function() {
-        const scannedText = document.getElementById('scanned-text').value;
-        const scannedTextLocation = document.getElementById('scanned-text-location').value;
-        sendDataToGoogleSheets({ scannedText, scannedTextLocation });
-    });
+    addLocationEventListeners();
 });
 
 document.getElementById('out-button').addEventListener('click', function() {
@@ -40,7 +29,6 @@ document.getElementById('out-button').addEventListener('click', function() {
             <button id="submit-order">SUBMIT</button>
         </div>
     `);
-
     document.getElementById('submit-order').addEventListener('click', function() {
         const scannedText = document.getElementById('scanned-text').value;
         const orderNumber = document.getElementById('order-number').value;
@@ -67,12 +55,26 @@ function switchContent(content) {
         additionalContent.style.animation = 'slide-up 0.5s forwards';
         
         // Add the event listener for the dynamically created QR code location button
-        if (document.getElementById('qr-code-location')) {
-            document.getElementById('qr-code-location').addEventListener('click', function() {
-                initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
-            });
-        }
+        addLocationEventListeners();
     }, 500); // Match this duration to the exit animation duration
+}
+
+function addLocationEventListeners() {
+    const qrCodeLocation = document.getElementById('qr-code-location');
+    if (qrCodeLocation) {
+        qrCodeLocation.addEventListener('click', function() {
+            initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
+        });
+    }
+
+    const submitLocation = document.getElementById('submit-location');
+    if (submitLocation) {
+        submitLocation.addEventListener('click', function() {
+            const scannedText = document.getElementById('scanned-text').value;
+            const scannedTextLocation = document.getElementById('scanned-text-location').value;
+            sendDataToGoogleSheets({ scannedText, scannedTextLocation });
+        });
+    }
 }
 
 function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
@@ -131,3 +133,5 @@ function sendDataToGoogleSheets(data) {
         console.error('Error:', error);
     });
 }
+
+
