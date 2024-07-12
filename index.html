@@ -1,33 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Form Submission Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DD Inventory System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const FORM_URL = 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSdP7xtvJm7b_4vOSuPBoMxLIdMo-5uPEuJlE5DGnf2trvaojA/formResponse';
+        let submitted = false;
+
+        function onFormSubmit() {
+            submitted = true;
+            setTimeout(() => {
+                window.location.href = 'submission.html';
+            }, 2000); // Adjust the timeout as needed
+        }
+
+        function startScanner() {
+            const qrCodeButton = document.getElementById("qr-code-button");
+            qrCodeButton.style.display = 'none';
+            const qrReaderElement = document.getElementById("qr-reader");
+            qrReaderElement.style.display = 'block';
+            const html5QrCode = new Html5Qrcode("qr-reader");
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                decodedText => {
+                    document.getElementById("scanned-text").value = decodedText;
+                    html5QrCode.stop().then(() => {
+                        qrReaderElement.style.display = 'none';
+                        qrCodeButton.style.display = 'block';
+                        document.getElementById("submit-button").disabled = false;
+                    }).catch(err => {
+                        console.error(`Unable to stop scanning: ${err}`);
+                    });
+                }
+            ).catch(err => {
+                console.error(`Unable to start scanning: ${err}`);
+            });
+        }
+
+        function submitData() {
+            const scannedText = document.getElementById("scanned-text").value;
+            const formData = new FormData();
+            formData.append('entry.1384875559', scannedText); // Update this with your actual entry ID
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', FORM_URL, true);
+            xhr.send(formData);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("qr-code-button").addEventListener("click", startScanner);
+            document.getElementById("submit-button").addEventListener("click", () => {
+                submitData();
+                document.getElementById("hiddenConfirm").contentWindow.location.reload();
+            });
+        });
+    </script>
 </head>
 <body>
-  <script type="text/javascript">var submitted=false</script>
-  <iframe name="hiddenConfirm" id="hiddenConfirm" style="display:none;" onload="if(submitted){
-    window.location='submission.html';}"></iframe>
-  <h1>Google Form Submission Test</h1>
-  <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdP7xtvJm7b_4vOSuPBoMxLIdMo-5uPEuJlE5DGnf2trvaojA/formResponse" method="POST" target="hiddenConfirm" onsubmit="submitted=true">
-    <label for="field1">Field 1:</label><br>
-    <input type="text" id="field1" name="entry.1384875559"><br><br>
-    
-    <label for="field2">Field 2:</label><br>
-    <input type="text" id="field2" name="entry.963240220"><br><br>
-    
-    <label for="field3">Field 3:</label><br>
-    <input type="text" id="field3" name="entry.1421317763"><br><br>
-    
-    <label for="multipleChoice">Choose IN or OUT:</label><br>
-    <input type="radio" id="in" name="entry.828572486" value="IN">
-    <label for="in">IN</label><br>
-    <input type="radio" id="out" name="entry.828572486" value="OUT">
-    <label for="out">OUT</label><br><br>
-    
-    
-    <input type="submit" value="Submit">
-  </form>
+    <script type="text/javascript">var submitted=false</script>
+    <iframe name="hiddenConfirm" id="hiddenConfirm" style="display:none;" onload="if(submitted){
+        window.location='submission.html';}"></iframe>
+    <div class="container">
+        <h1>DD Inventory System</h1>
+        <p>Scan ITEM</p>
+        <div class="qr-code" id="qr-code-button">
+            <img src="qr-code.png" alt="QR Code">
+        </div>
+        <input type="text" id="scanned-text" placeholder="SCANNED TEXT">
+        <div class="buttons">
+            <button id="in-button">IN</button>
+            <button id="out-button">OUT</button>
+        </div>
+        <div id="additional-content"></div>
+        <div id="qr-reader" style="display:none;"></div>
+        <button id="submit-button" disabled>Submit</button>
+    </div>
 </body>
 </html>
