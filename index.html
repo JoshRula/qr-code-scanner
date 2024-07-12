@@ -1,52 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit to Google Sheets</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Form Submission Test</title>
 </head>
 <body>
-    <h1>Submit your details</h1>
-    <form id="submit-form">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required><br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-        <label for="message">Message:</label>
-        <textarea id="message" name="message" required></textarea><br><br>
-        <button type="submit">Submit</button>
-    </form>
-
-    <script>
-        document.getElementById('submit-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-
-            fetch('https://script.google.com/macros/s/AKfycbymiM5vj05gOCbz50jm6btftsDN_wZj21ZGxP3UnPRNqXP5nRKXreZhLO8BuCRf2eMY/exec', {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({name, email, message})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    alert('Form submitted successfully!');
-                    document.getElementById('submit-form').reset();
-                } else {
-                    alert('Error submitting form.');
-                }
-            })
-            .catch(error => {
-                alert('Error submitting form.');
-                console.error('Error:', error);
-            });
-        });
-    </script>
+  <h1>Google Form Submission Test</h1>
+  <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdP7xtvJm7b_4vOSuPBoMxLIdMo-5uPEuJlE5DGnf2trvaojA/formResponse" method="POST">
+    <label for="field1">Field 1:</label><br>
+    <input type="text" id="field1" name="entry.1384875559"><br><br>
+    
+    <label for="field2">Field 2:</label><br>
+    <input type="text" id="field2" name="entry.963240220"><br><br>
+    
+    <label for="field3">Field 3:</label><br>
+    <input type="text" id="field3" name="entry.1421317763"><br><br>
+    
+    <input type="hidden" name="dlut" value="1720789946940">
+    
+    <input type="submit" value="Submit">
+  </form>
 </body>
 </html>
