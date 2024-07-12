@@ -22,13 +22,14 @@
         <div id="additional-content"></div>
         <div id="qr-reader" style="display:none;"></div>
     </div>
-    <form id="google-form" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdP7xtvJm7b_4vOSuPBoMxLIdMo-5uPEuJlE5DGnf2trvaojA/formResponse" method="POST" target="hiddenConfirm" style="display:none;">
+    <form id="google-form" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdP7xtvJm7b_4vOSuPBoMxLIdMo-5uPEuJlE5DGnf2trvaojA/formResponse" method="POST" target="hiddenConfirm" onsubmit="submitted=true" style="display:none;">
         <input type="text" id="field1" name="entry.1384875559">
         <input type="text" id="field2" name="entry.963240220">
         <input type="text" id="field3" name="entry.1421317763">
         <input type="radio" id="in-radio" name="entry.828572486" value="IN">
         <input type="radio" id="out-radio" name="entry.828572486" value="OUT">
     </form>
+    <iframe name="hiddenConfirm" id="hiddenConfirm" style="display:none;" onload="if(submitted){ window.location='submission.html'; }"></iframe>
     <script src="script.js"></script>
 </body>
 </html>
