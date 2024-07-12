@@ -3,25 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DD Inventory System</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Submit to Google Sheets</title>
 </head>
 <body>
-    <div class="container">
-        <h1>DD Inventory System</h1>
-        <p>Scan ITEM</p>
-        <div class="qr-code" id="qr-code-button">
-            <img src="qr-code.png" alt="QR Code">
-        </div>
-        <input type="text" id="scanned-text" placeholder="SCANNED TEXT">
-        <div class="buttons">
-            <button id="in-button">IN</button>
-            <button id="out-button">OUT</button>
-        </div>
-        <div id="additional-content"></div>
-        <div id="qr-reader" style="display:none;"></div>
-    </div>
-    <script src="script.js"></script>
+    <h1>Submit your details</h1>
+    <form id="submit-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea><br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        document.getElementById('submit-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({name, email, message})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Form submitted successfully!');
+                    document.getElementById('submit-form').reset();
+                } else {
+                    alert('Error submitting form.');
+                }
+            })
+            .catch(error => {
+                alert('Error submitting form.');
+                console.error('Error:', error);
+            });
+        });
+    </script>
 </body>
 </html>
