@@ -4,26 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Form Submission Test</title>
+  <style>
+    iframe {
+      display: none; /* Hide the iframe */
+    }
+  </style>
+  <script>
+    let submitted = false;
+
+    function onFormSubmit() {
+      submitted = true;
+      setTimeout(() => {
+        location.reload(); // Reload the page after form submission
+      }, 2000); // Adjust the timeout as needed
+    }
+  </script>
 </head>
 <body>
   <h1>Google Form Submission Test</h1>
-  <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdP7xtvJm7b_4vOSuPBoMxLIdMo-5uPEuJlE5DGnf2trvaojA/formResponse" method="POST">
+  <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdP7xtvJm7b_4vOSuPBoMxLIdMo-5uPEuJlE5DGnf2trvaojA/formResponse" method="POST" target="hidden_iframe" onsubmit="onFormSubmit()">
     <label for="field1">Field 1:</label><br>
-    <input type="text" id="field1" name="entry.1384875559"><br><br>
+    <input type="text" id="field1" name="entry.1384875559" required><br><br>
     
     <label for="field2">Field 2:</label><br>
-    <input type="text" id="field2" name="entry.963240220"><br><br>
+    <input type="text" id="field2" name="entry.963240220" required><br><br>
     
     <label for="field3">Field 3:</label><br>
-    <input type="text" id="field3" name="entry.1421317763"><br><br>
+    <input type="text" id="field3" name="entry.1421317763" required><br><br>
     
     <label for="multipleChoice">Choose IN or OUT:</label><br>
-    <input type="radio" id="in" name="entry.828572486" value="IN">
+    <input type="radio" id="in" name="entry.MULTIPLE_CHOICE_ENTRY_ID" value="IN" required>
     <label for="in">IN</label><br>
-    <input type="radio" id="out" name="entry.828572486" value="OUT">
+    <input type="radio" id="out" name="entry.MULTIPLE_CHOICE_ENTRY_ID" value="OUT" required>
     <label for="out">OUT</label><br><br>
-
+    
+    <input type="hidden" name="dlut" value="1720789946940">
+    
     <input type="submit" value="Submit">
   </form>
+  
+  <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
 </body>
 </html>
