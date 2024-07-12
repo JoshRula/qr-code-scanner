@@ -18,7 +18,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     document.getElementById('out-button').addEventListener('click', function() {
-        submitForm('OUT');
+        switchContent(`
+            <div>
+                <input type="text" id="order-number" placeholder="ENTER ORDER #" style="margin-bottom: 10px;">
+                <button id="submit-order">SUBMIT</button>
+            </div>
+        `);
+        addOrderEventListeners();
     });
 
     document.getElementById('qr-code-button').addEventListener('click', function() {
@@ -68,7 +74,12 @@ function switchContent(content) {
         additionalContent.innerHTML = content;
         additionalContent.style.display = 'block';
         additionalContent.style.animation = 'slide-up 0.5s forwards';
-        addLocationEventListeners();
+        if (document.getElementById('submit-location')) {
+            addLocationEventListeners();
+        }
+        if (document.getElementById('submit-order')) {
+            addOrderEventListeners();
+        }
     }, 500);
 }
 
@@ -88,11 +99,22 @@ function addLocationEventListeners() {
     }
 }
 
+function addOrderEventListeners() {
+    const submitOrder = document.getElementById('submit-order');
+    if (submitOrder) {
+        submitOrder.addEventListener('click', function() {
+            submitForm('OUT');
+        });
+    }
+}
+
 function submitForm(action) {
     const scannedText = document.getElementById('scanned-text').value;
     const scannedTextLocation = document.getElementById('scanned-text-location') ? document.getElementById('scanned-text-location').value : '';
+    const orderNumber = document.getElementById('order-number') ? document.getElementById('order-number').value : '';
+    
     document.getElementById('field1').value = scannedText;
-    document.getElementById('field2').value = scannedTextLocation;
+    document.getElementById('field2').value = action === 'IN' ? scannedTextLocation : orderNumber;
     document.getElementById(action.toLowerCase() + '-radio').checked = true;
 
     document.getElementById('google-form').submit();
