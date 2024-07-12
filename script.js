@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
+    var submitted = false;
+
     document.getElementById('in-button').disabled = true;
     document.getElementById('out-button').disabled = true;
 
@@ -117,5 +119,6 @@ function submitForm(action) {
     document.getElementById('field2').value = action === 'IN' ? scannedTextLocation : orderNumber;
     document.getElementById(action.toLowerCase() + '-radio').checked = true;
 
+    submitted = true;
     document.getElementById('google-form').submit();
 }
