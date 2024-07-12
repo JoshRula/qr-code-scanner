@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Form Submission Test</title>
+</head>
+<body>
+  <script type="text/javascript">var submitted=false</script>
+  <iframe name="hiddenConfirm" id="hiddenConfirm" style="display:none;" onload="if(submitted){
+    window.location='submission.html';}"></iframe>
+  <h1>Google Form Submission Test</h1>
+  <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdP7xtvJm7b_4vOSuPBoMxLIdMo-5uPEuJlE5DGnf2trvaojA/formResponse" method="POST" target="hiddenConfirm" onsubmit="submitted=true">
+    <label for="field1">Field 1:</label><br>
+    <input type="text" id="field1" name="entry.1384875559"><br><br>
+    
+    <label for="field2">Field 2:</label><br>
+    <input type="text" id="field2" name="entry.963240220"><br><br>
+    
+    <label for="field3">Field 3:</label><br>
+    <input type="text" id="field3" name="entry.1421317763"><br><br>
+    
+    <label for="multipleChoice">Choose IN or OUT:</label><br>
+    <input type="radio" id="in" name="entry.828572486" value="IN">
+    <label for="in">IN</label><br>
+    <input type="radio" id="out" name="entry.828572486" value="OUT">
+    <label for="out">OUT</label><br><br>
+    
+    
+    <input type="submit" value="Submit">
+  </form>
+</body>
+</html>
