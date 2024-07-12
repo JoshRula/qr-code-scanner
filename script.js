@@ -3,7 +3,18 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('out-button').disabled = true;
 
     document.getElementById('in-button').addEventListener('click', function() {
-        submitForm('IN');
+        switchContent(`
+            <div>
+                <p>Scan LOCATION</p>
+                <div class="qr-code" id="qr-code-location">
+                    <img src="qr-code.png" alt="QR Code">
+                </div>
+                <input type="text" id="scanned-text-location" placeholder="SCANNED TEXT">
+                <button id="submit-location">SUBMIT</button>
+                <div id="qr-reader-location" class="qr-reader" style="display:none;"></div>
+            </div>
+        `);
+        addLocationEventListeners();
     });
 
     document.getElementById('out-button').addEventListener('click', function() {
@@ -49,9 +60,39 @@ function initializeQrCodeScanner(readerId, inputId, qrCodeContainerId) {
     });
 }
 
+function switchContent(content) {
+    const additionalContent = document.getElementById('additional-content');
+    additionalContent.style.animation = 'slide-down 0.5s forwards';
+
+    setTimeout(() => {
+        additionalContent.innerHTML = content;
+        additionalContent.style.display = 'block';
+        additionalContent.style.animation = 'slide-up 0.5s forwards';
+        addLocationEventListeners();
+    }, 500);
+}
+
+function addLocationEventListeners() {
+    const qrCodeLocation = document.getElementById('qr-code-location');
+    if (qrCodeLocation) {
+        qrCodeLocation.addEventListener('click', function() {
+            initializeQrCodeScanner('qr-reader-location', 'scanned-text-location', 'qr-code-location');
+        });
+    }
+
+    const submitLocation = document.getElementById('submit-location');
+    if (submitLocation) {
+        submitLocation.addEventListener('click', function() {
+            submitForm('IN');
+        });
+    }
+}
+
 function submitForm(action) {
     const scannedText = document.getElementById('scanned-text').value;
+    const scannedTextLocation = document.getElementById('scanned-text-location') ? document.getElementById('scanned-text-location').value : '';
     document.getElementById('field1').value = scannedText;
+    document.getElementById('field2').value = scannedTextLocation;
     document.getElementById(action.toLowerCase() + '-radio').checked = true;
 
     document.getElementById('google-form').submit();
