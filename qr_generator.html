@@ -81,7 +81,7 @@
                     if (line.trim() !== '') {
                         const qr = new QRious({
                             value: line.trim(),
-                            size: 800 // Increase QR code size to 800
+                            size: 1000 // Increase QR code size to 1000
                         });
 
                         const canvas = document.createElement('canvas');
@@ -96,10 +96,10 @@
                         ctx.fillStyle = 'black';
                         ctx.font = 'bold 80px Arial';
                         ctx.textAlign = 'center';
-                        ctx.fillText('DD Inventory System', canvas.width / 2, 150);
+                        ctx.fillText('DD Inventory System', canvas.width / 2, 170);
                         ctx.beginPath();
-                        ctx.moveTo(canvas.width / 2 - 350, 160); // Draw underline
-                        ctx.lineTo(canvas.width / 2 + 350, 160);
+                        ctx.moveTo(canvas.width / 2 - 350, 180); // Draw underline
+                        ctx.lineTo(canvas.width / 2 + 350, 180);
                         ctx.stroke();
 
                         // Draw QR code
@@ -110,7 +110,7 @@
 
                             // Draw text below QR code
                             ctx.font = 'bold 60px Arial';
-                            ctx.fillText(line.trim(), canvas.width / 2, canvas.height - 10);
+                            ctx.fillText(line.trim(), canvas.width / 2, canvas.height - 100);
 
                             const imgDataUrl = canvas.toDataURL();
                             const filename = toCamelCase(line.trim()) + ".png";
