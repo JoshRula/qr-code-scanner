@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin: 4px 0;
+            box-sizing: border-box;
+        }
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Generator</h1>
+    <textarea id="inputText" rows="10" cols="50" placeholder="Paste your values here, one per line..."></textarea>
+    <button onclick="generateQRCodes()">Generate QR Codes</button>
+    <table id="qrTable">
+        <thead>
+            <tr>
+                <th>Text</th>
+                <th>QR Code</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script>
+        function generateQRCodes() {
+            const inputText = document.getElementById('inputText').value;
+            const lines = inputText.split('\n');
+            const tbody = document.getElementById('qrTable').getElementsByTagName('tbody')[0];
+
+            // Clear existing table rows
+            tbody.innerHTML = '';
+
+            lines.forEach(line => {
+                if (line.trim() !== '') {
+                    const tr = document.createElement('tr');
+                    const tdText = document.createElement('td');
+                    const tdQR = document.createElement('td');
+                    const qr = new QRious({
+                        value: line.trim(),
+                        size: 150
+                    });
+
+                    tdText.textContent = line.trim();
+                    tdQR.innerHTML = `<img src="${qr.toDataURL()}" alt="QR Code">`;
+
+                    tr.appendChild(tdText);
+                    tr.appendChild(tdQR);
+                    tbody.appendChild(tr);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
