@@ -10,26 +10,15 @@
             margin: 0;
             padding: 20px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        input[type="text"] {
+        input[type="text"], textarea {
             width: 100%;
             padding: 8px;
             margin: 4px 0;
             box-sizing: border-box;
+        }
+        canvas {
+            border: 1px solid black;
+            margin-top: 20px;
         }
         .qr-code img {
             width: 150px;
@@ -42,15 +31,7 @@
     <textarea id="inputText" rows="10" cols="50" placeholder="Paste your values here, one per line..."></textarea>
     <button onclick="generateQRCodes()">Generate QR Codes</button>
     <a id="downloadLink" href="#" style="display:none;" download="qr_codes.zip">Download All QR Codes</a>
-    <table id="qrTable">
-        <thead>
-            <tr>
-                <th>Text</th>
-                <th>QR Code</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div id="canvasContainer"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -66,32 +47,49 @@
         function generateQRCodes() {
             const inputText = document.getElementById('inputText').value;
             const lines = inputText.split('\n');
-            const tbody = document.getElementById('qrTable').getElementsByTagName('tbody')[0];
             const zip = new JSZip();
-
-            // Clear existing table rows
-            tbody.innerHTML = '';
+            const canvasContainer = document.getElementById('canvasContainer');
+            canvasContainer.innerHTML = ''; // Clear previous canvases
 
             lines.forEach(line => {
                 if (line.trim() !== '') {
-                    const tr = document.createElement('tr');
-                    const tdText = document.createElement('td');
-                    const tdQR = document.createElement('td');
                     const qr = new QRious({
                         value: line.trim(),
-                        size: 900 // Set QR code size to 900x900 pixels
+                        size: 450 // Set QR code size
                     });
 
-                    tdText.textContent = line.trim();
-                    const imgDataUrl = qr.toDataURL();
-                    tdQR.innerHTML = `<img src="${imgDataUrl}" alt="QR Code" style="width:150px;height:150px;">`;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1200; // 4 inches at 300 dpi
+                    canvas.height = 1800; // 6 inches at 300 dpi
 
-                    tr.appendChild(tdText);
-                    tr.appendChild(tdQR);
-                    tbody.appendChild(tr);
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                    const filename = toCamelCase(line.trim()) + ".png";
-                    zip.file(filename, imgDataUrl.split(',')[1], { base64: true });
+                    // Draw "DD Inventory System" text
+                    ctx.fillStyle = 'black';
+                    ctx.font = '50px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('DD Inventory System', canvas.width / 2, 100);
+
+                    // Draw QR code
+                    const img = new Image();
+                    img.src = qr.toDataURL();
+                    img.onload = () => {
+                        ctx.drawImage(img, (canvas.width - img.width) / 2, (canvas.height - img.height) / 2);
+
+                        // Draw text below QR code
+                        ctx.font = '40px Arial';
+                        ctx.fillText(line.trim(), canvas.width / 2, canvas.height - 50);
+
+                        const imgDataUrl = canvas.toDataURL();
+                        const filename = toCamelCase(line.trim()) + ".png";
+                        zip.file(filename, imgDataUrl.split(',')[1], { base64: true });
+
+                        const imgElement = document.createElement('img');
+                        imgElement.src = imgDataUrl;
+                        canvasContainer.appendChild(imgElement);
+                    };
                 }
             });
 
