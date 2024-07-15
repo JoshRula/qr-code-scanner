@@ -10,15 +10,26 @@
             margin: 0;
             padding: 20px;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
         input[type="text"], textarea {
             width: 100%;
             padding: 8px;
             margin: 4px 0;
             box-sizing: border-box;
-        }
-        canvas {
-            border: 1px solid black;
-            margin-top: 20px;
         }
         .qr-code img {
             width: 150px;
@@ -31,7 +42,15 @@
     <textarea id="inputText" rows="10" cols="50" placeholder="Paste your values here, one per line..."></textarea>
     <button onclick="generateQRCodes()">Generate QR Codes</button>
     <a id="downloadLink" href="#" style="display:none;" download="qr_codes.zip">Download All QR Codes</a>
-    <div id="canvasContainer"></div>
+    <table id="qrTable">
+        <thead>
+            <tr>
+                <th>Text</th>
+                <th>QR Code</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -47,11 +66,12 @@
         function generateQRCodes() {
             const inputText = document.getElementById('inputText').value;
             const lines = inputText.split('\n');
+            const tbody = document.getElementById('qrTable').getElementsByTagName('tbody')[0];
             const zip = new JSZip();
-            const canvasContainer = document.getElementById('canvasContainer');
-            canvasContainer.innerHTML = ''; // Clear previous canvases
 
-            lines.forEach(line => {
+            tbody.innerHTML = ''; // Clear existing table rows
+
+            lines.forEach((line, index) => {
                 if (line.trim() !== '') {
                     const qr = new QRious({
                         value: line.trim(),
@@ -86,6 +106,18 @@
                         const filename = toCamelCase(line.trim()) + ".png";
                         zip.file(filename, imgDataUrl.split(',')[1], { base64: true });
 
+                        // Add QR code to table
+                        const tr = document.createElement('tr');
+                        const tdText = document.createElement('td');
+                        const tdQR = document.createElement('td');
+                        tdText.textContent = line.trim();
+                        tdQR.innerHTML = `<img src="${imgDataUrl}" alt="QR Code" style="width:150px;height:150px;">`;
+
+                        tr.appendChild(tdText);
+                        tr.appendChild(tdQR);
+                        tbody.appendChild(tr);
+
+                        // Create and append image element for visualization
                         const imgElement = document.createElement('img');
                         imgElement.src = imgDataUrl;
                         canvasContainer.appendChild(imgElement);
