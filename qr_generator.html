@@ -41,6 +41,7 @@
     <h1>QR Code Generator</h1>
     <textarea id="inputText" rows="10" cols="50" placeholder="Paste your values here, one per line..."></textarea>
     <button onclick="generateQRCodes()">Generate QR Codes</button>
+    <a id="downloadLink" href="#" style="display:none;" download="qr_codes.zip">Download All QR Codes</a>
     <table id="qrTable">
         <thead>
             <tr>
@@ -51,11 +52,14 @@
         <tbody></tbody>
     </table>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script>
         function generateQRCodes() {
             const inputText = document.getElementById('inputText').value;
             const lines = inputText.split('\n');
             const tbody = document.getElementById('qrTable').getElementsByTagName('tbody')[0];
+            const zip = new JSZip();
 
             // Clear existing table rows
             tbody.innerHTML = '';
@@ -71,12 +75,23 @@
                     });
 
                     tdText.textContent = line.trim();
-                    tdQR.innerHTML = `<img src="${qr.toDataURL()}" alt="QR Code">`;
+                    const imgDataUrl = qr.toDataURL();
+                    tdQR.innerHTML = `<img src="${imgDataUrl}" alt="QR Code">`;
 
                     tr.appendChild(tdText);
                     tr.appendChild(tdQR);
                     tbody.appendChild(tr);
+
+                    const filename = `${line.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+                    zip.file(filename, imgDataUrl.split(',')[1], {base64: true});
                 }
+            });
+
+            // Generate ZIP and create download link
+            zip.generateAsync({type: 'blob'}).then(function(content) {
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = URL.createObjectURL(content);
+                downloadLink.style.display = 'block';
             });
         }
     </script>
