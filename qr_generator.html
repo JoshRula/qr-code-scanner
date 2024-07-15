@@ -79,12 +79,12 @@
                     const tdQR = document.createElement('td');
                     const qr = new QRious({
                         value: line.trim(),
-                        size: 150
+                        size: 900 // Set QR code size to 900x900 pixels
                     });
 
                     tdText.textContent = line.trim();
                     const imgDataUrl = qr.toDataURL();
-                    tdQR.innerHTML = `<img src="${imgDataUrl}" alt="QR Code">`;
+                    tdQR.innerHTML = `<img src="${imgDataUrl}" alt="QR Code" style="width:150px;height:150px;">`;
 
                     tr.appendChild(tdText);
                     tr.appendChild(tdQR);
