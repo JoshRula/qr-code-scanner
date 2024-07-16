@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator with Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        #inputText {
+            width: 100%;
+            max-width: 500px;
+            padding: 8px;
+            margin: 4px 0;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            max-width: 1000px;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:not(:first-child) {
+            height: 140%;
+        }
+        .qr-code img {
+            width: 200px; /* 150px * 1.15 */
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Generator</h1>
+    <textarea id="inputText" rows="10" cols="50" placeholder="Paste your values here, one per line..."></textarea>
+    <button onclick="generateQRCodes()">Generate QR Codes</button>
+    <a id="downloadLink" href="#" style="display:none;" download="qr_codes.zip">Download All QR Codes</a>
+    <table id="qrTable">
+        <thead>
+            <tr>
+                <th>Text</th>
+                <th>QR Code</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        const webAppUrl = 'YOUR_WEB_APP_URL';
+
+        function toCamelCase(str) {
+            return str
+                .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+                    return index == 0 ? match.toLowerCase() : match.toUpperCase();
+                })
+                .replace(/\s+/g, '');
+        }
+
+        async function validateItemNumber(itemNumber) {
+            const response = await fetch(`${webAppUrl}?itemNumber=${encodeURIComponent(itemNumber)}`);
+            const data = await response.json();
+            return data.isValid;
+        }
+
+        async function generateQRCodes() {
+            const inputText = document.getElementById('inputText').value;
+            const lines = inputText.split('\n');
+            const tbody = document.getElementById('qrTable').getElementsByTagName('tbody')[0];
+            const zip = new JSZip();
+
+            tbody.innerHTML = ''; // Clear existing table rows
+
+            const imagePromises = lines.map(async (line, index) => {
+                const itemNumber = line.trim();
+                if (itemNumber !== '' && await validateItemNumber(itemNumber)) {
+                    const qr = new QRious({
+                        value: itemNumber,
+                        size: 800 // Increase QR code size to 800
+                    });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1200; // 4 inches at 300 dpi
+                    canvas.height = 1800; // 6 inches at 300 dpi
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw "DD Inventory System" text
+                    ctx.fillStyle = 'black';
+                    ctx.font = 'bold 80px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('DD Inventory System', canvas.width / 2, 150); // Adjusted y-coordinate for padding
+                    ctx.beginPath();
+                    ctx.moveTo(canvas.width / 2 - 350, 160); // Adjusted underline position
+                    ctx.lineTo(canvas.width / 2 + 350, 160);
+                    ctx.stroke();
+
+                    // Draw QR code
+                    const img = new Image();
+                    img.src = qr.toDataURL();
+                    img.onload = () => {
+                        ctx.drawImage(img, (canvas.width - img.width) / 2, (canvas.height - img.height) / 2);
+
+                        // Draw text below QR code
+                        ctx.font = 'bold 60px Arial';
+                        ctx.fillText(itemNumber, canvas.width / 2, canvas.height - 100); // Adjusted y-coordinate for padding
+
+                        const imgDataUrl = canvas.toDataURL();
+                        const filename = toCamelCase(itemNumber) + ".png";
+                        zip.file(filename, imgDataUrl.split(',')[1], { base64: true });
+
+                        // Add QR code to table
+                        const tr = document.createElement('tr');
+                        const tdText = document.createElement('td');
+                        const tdQR = document.createElement('td');
+                        tdText.textContent = itemNumber;
+                        tdQR.innerHTML = `<img src="${imgDataUrl}" alt="QR Code" style="width:200px;height:200px;">`;
+
+                        tr.appendChild(tdText);
+                        tr.appendChild(tdQR);
+                        tbody.appendChild(tr);
+                    };
+                } else if (itemNumber !== '') {
+                    // If item number is invalid, display an error in the table
+                    const tr = document.createElement('tr');
+                    const tdText = document.createElement('td');
+                    const tdQR = document.createElement('td');
+                    tdText.textContent = itemNumber;
+                    tdQR.textContent = 'Invalid Item Number';
+                    tr.appendChild(tdText);
+                    tr.appendChild(tdQR);
+                    tbody.appendChild(tr);
+                }
+            });
+
+            await Promise.all(imagePromises);
+
+            // Generate ZIP and create download link
+            zip.generateAsync({ type: 'blob' }).then(function(content) {
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = URL.createObjectURL(content);
+                downloadLink.style.display = 'block';
+            }).catch(error => {
+                console.error('Error generating QR codes:', error);
+            });
+        }
+    </script>
+</body>
+</html>
