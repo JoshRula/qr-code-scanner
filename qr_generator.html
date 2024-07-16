@@ -64,7 +64,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script>
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbybO15xm1fwgWS5M2oPqsC494f-9a4I1ttGJxgVFCRWJrA_E3V2dQx2ipTBUwu8AdTi/exec';
+        const webAppUrl = 'YOUR_WEB_APP_URL';
 
         function toCamelCase(str) {
             return str
@@ -89,12 +89,15 @@
 
             tbody.innerHTML = ''; // Clear existing table rows
 
+            const validRows = [];
+            const invalidRows = [];
+
             const imagePromises = lines.map(async (line, index) => {
                 const itemNumber = line.trim();
                 if (itemNumber !== '' && await validateItemNumber(itemNumber)) {
                     const qr = new QRious({
                         value: itemNumber,
-                        size: 1100 // Increase QR code size to 1100
+                        size: 800 // Increase QR code size to 800
                     });
 
                     const canvas = document.createElement('canvas');
@@ -109,10 +112,10 @@
                     ctx.fillStyle = 'black';
                     ctx.font = 'bold 80px Arial';
                     ctx.textAlign = 'center';
-                    ctx.fillText('DD Inventory System', canvas.width / 2, 180); // Adjusted y-coordinate for padding
+                    ctx.fillText('DD Inventory System', canvas.width / 2, 150); // Adjusted y-coordinate for padding
                     ctx.beginPath();
-                    ctx.moveTo(canvas.width / 2 - 350, 190); // Adjusted underline position
-                    ctx.lineTo(canvas.width / 2 + 350, 190);
+                    ctx.moveTo(canvas.width / 2 - 350, 160); // Adjusted underline position
+                    ctx.lineTo(canvas.width / 2 + 350, 160);
                     ctx.stroke();
 
                     // Draw QR code
@@ -122,14 +125,14 @@
                         ctx.drawImage(img, (canvas.width - img.width) / 2, (canvas.height - img.height) / 2);
 
                         // Draw text below QR code
-                        ctx.font = 'bold 150px Arial';
-                        ctx.fillText(itemNumber, canvas.width / 2, canvas.height - 110); // Adjusted y-coordinate for padding
+                        ctx.font = 'bold 60px Arial';
+                        ctx.fillText(itemNumber, canvas.width / 2, canvas.height - 100); // Adjusted y-coordinate for padding
 
                         const imgDataUrl = canvas.toDataURL();
                         const filename = toCamelCase(itemNumber) + ".png";
                         zip.file(filename, imgDataUrl.split(',')[1], { base64: true });
 
-                        // Add QR code to table
+                        // Create valid row
                         const tr = document.createElement('tr');
                         const tdText = document.createElement('td');
                         const tdQR = document.createElement('td');
@@ -138,10 +141,10 @@
 
                         tr.appendChild(tdText);
                         tr.appendChild(tdQR);
-                        tbody.appendChild(tr);
+                        validRows.push(tr);
                     };
                 } else if (itemNumber !== '') {
-                    // If item number is invalid, display an error in the table
+                    // Create invalid row
                     const tr = document.createElement('tr');
                     const tdText = document.createElement('td');
                     const tdQR = document.createElement('td');
@@ -150,12 +153,18 @@
                     tr.classList.add('invalid');
                     tr.appendChild(tdText);
                     tr.appendChild(tdQR);
-                    tbody.appendChild(tr);
+                    invalidRows.push(tr);
                     invalidCount++;
                 }
             });
 
             await Promise.all(imagePromises);
+
+            // Append invalid rows first
+            invalidRows.forEach(row => tbody.appendChild(row));
+
+            // Append valid rows
+            validRows.forEach(row => tbody.appendChild(row));
 
             if (invalidCount > 0) {
                 alert(`${invalidCount} invalid item number(s) found.`);
